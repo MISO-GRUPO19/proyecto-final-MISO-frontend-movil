@@ -1,0 +1,85 @@
+/* Estilos generales */
+.heading {
+  font-size: 32px;
+  font-weight: bold;
+  padding-left: 20px;
+  margin-top: 70px;
+  margin-bottom: -60px;
+}
+
+.para {
+  font-size: 22px;
+  font-weight: 500;
+  padding-left: 20px;
+  margin-bottom: 70px;
+  color: #a6abb1;
+}
+
+/* Contenedor principal */
+.login-container {
+  height: calc(100vh - 60px); /* resto de pantalla debajo de la barra */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.login-card {
+  background-color: #f9f9f9;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.login-card h1 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.input-item {
+  width: 100%;
+  margin-bottom: 20px; /* Espacio entre los campos */
+  border-radius: 12px;
+  border: 2px solid #e2e2e2;
+  height: 70px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+ion-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 20px;
+  color: #888;
+}
+
+input {
+  width: 100%;
+  padding-left: 35px; /* Espacio para el icono */
+  padding-right: 20px;
+  border: none;
+  border-radius: 8px;
+  height: 45px;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #0066cc;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+

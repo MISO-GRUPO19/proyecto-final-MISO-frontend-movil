@@ -1,0 +1,40 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="products">
+      <ion-icon name="grid-outline"></ion-icon>
+      Productos
+    </ion-tab-button>
+    <ion-tab-button tab="reports" *ngIf="roleId === roles.client">
+      <ion-icon name="receipt-outline"></ion-icon>
+      Reportes
+    </ion-tab-button>   
+    <ion-tab-button tab="deliveries" *ngIf="roleId === roles.client">
+      <ion-icon name="cube-outline"></ion-icon>
+      Entregas
+    </ion-tab-button>
+  
+    <ion-tab-button tab="profile" *ngIf="roleId === roles.client">
+      <ion-icon name="person-outline"></ion-icon>
+      Perfil
+    </ion-tab-button>
+
+    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
+      <ion-icon name="list-outline"></ion-icon>
+      Inventario
+    </ion-tab-button>   
+    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
+      <ion-icon name="car-outline"></ion-icon>
+      Visitas
+    </ion-tab-button>
+    <ion-tab-button tab="shopping-cart" >
+      <ion-icon name="cart-outline"></ion-icon>
+      Carrito
+    </ion-tab-button>
+    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
+      <ion-icon name="person-outline"></ion-icon>
+      Clientes
+    </ion-tab-button>
+  
+  </ion-tab-bar>
+</ion-tabs>
+
