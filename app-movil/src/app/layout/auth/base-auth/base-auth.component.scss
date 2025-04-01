@@ -1,0 +1,78 @@
+
+
+@mixin mq-bg-item($color) {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #{$color};
+    z-index: -2;
+  }
+  
+  @mixin mq-bg-item-position($size: 500px, $top: unset, $left: unset, $bottom: unset, $right: unset) {
+    top: $top;
+    left: $left;
+    bottom: $bottom;
+    right: $right;
+    width: $size;
+    height: $size;
+  }
+  
+  .mat-drawer-container {
+    background-color: transparent;
+  }
+  
+  .page-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    overflow: hidden; 
+  }
+  
+  .auth-page-container {
+    position: relative;
+    display: grid;
+    box-sizing: border-box;
+  }
+  
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    padding: 50px;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: calc(400px * 0.8);
+    background: transparent;
+    margin-bottom: 30px;
+  }
+  
+  .logo-vertical {
+    flex-direction: column;
+  
+    .logo-icon {
+      max-width: 85px;
+    }
+  
+    .logo-brand {
+      max-width: 100%;
+    }
+  }
+  
+  .logo-horizontal {
+    .logo-icon {
+      max-width: 50px;
+    }
+  
+    .logo-brand {
+      max-width: calc(100% - 85px);
+      height: auto;
+    }
+  }
+  

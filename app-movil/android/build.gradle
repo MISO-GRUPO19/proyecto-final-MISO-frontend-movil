@@ -1,0 +1,43 @@
+buildscript {
+    ext {
+        compileSdkVersion = 35
+        minSdkVersion = 23
+        targetSdkVersion = 35
+
+        // Dependencia de AndroidX
+        androidxAppCompatVersion = '1.6.1'
+        androidxCoordinatorLayoutVersion = '1.2.0'
+        coreSplashScreenVersion = '1.0.1'
+
+        // Test
+        junitVersion = '4.13.2'
+        androidxJunitVersion = '1.1.5'
+        androidxEspressoCoreVersion = '3.5.1'
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.google.gms:google-services:4.4.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+subprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.fork = true
+        options.forkOptions.javaHome = file("C:/Program Files/Eclipse Adoptium/jdk-21.0.6.7-hotspot")
+    }
+}
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
