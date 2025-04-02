@@ -24,7 +24,9 @@ export class AuthManager {
     }
 
     logout() {
-        sessionStorage.clear();
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('user');
     }
 
     getAccessToken(): string | null {

@@ -6,51 +6,25 @@ export const routes: Routes = [
         path: 'home',
         component: HomePageComponent,
         children: [
-            {
-                path: 'customers',
-                loadChildren: () => import('./modules/customers/customers.module').then((m) => m.CustomersModule),
-            },
-            {
-                path: 'deliveries',
-                loadChildren: () => import('./modules/deliveries/deliveries.module').then((m) => m.DeliveriesModule),
-            },
-            {
-                path: 'inventory',
-                loadChildren: () => import('./modules/inventory/inventory.module').then((m) => m.InventoryModule),
-            },
-            {
-                path: 'products',
-                loadChildren: () => import('./modules/products/products.module').then((m) => m.ProductsModule),
-            },
-            {
-                path: 'profile',
-                loadChildren: () => import('./modules/profile/profile.module').then((m) => m.ProfileModule),
-            },
-            {
-                path: 'reports',
-                loadChildren: () => import('./modules/reports/reports.module').then((m) => m.ReportsModule),
-            },
-            {
-                path: 'shopping-cart',
-                loadChildren: () => import('./modules/shopping-cart/shopping-cart.module').then((m) => m.ShoppingCartModule),
-            },
-            {
-                path: 'visits',
-                loadChildren: () => import('./modules/visits/visits.module').then((m) => m.VisitsModule),
-            },
-            {
-                path: '', redirectTo: 'products', pathMatch: 'full',
-            },
-        ],
+            { path: '', redirectTo: 'products', pathMatch: 'full' },
+            // { path: 'products', component: ProductsComponent },
+            // { path: 'reports', component: ReportsComponent },
+            // { path: 'deliveries', component: DeliveriesComponent },
+            // { path: 'profile', component: ProfileComponent },
+            // { path: 'inventory', component: InventoryComponent },
+            // { path: 'visits', component: VisitsComponent },
+            // { path: 'shopping-cart', component: ShoppingCartComponent },
+            // { path: 'clients', component: ClientsComponent }
+        ]
     },
     {
         path: 'auth',
         children: [
             {
-                path: '',
-                loadChildren: () => import('./layout/auth/auth.module').then(m => m.AuthModule),
+                path: 'login',
+                loadComponent: () => import('./layout/auth/login/login.component').then(m => m.LoginComponent),
             },
-            { path: '', redirectTo: '', pathMatch: 'full' },
+            { path: '', redirectTo: 'login', pathMatch: 'full' },
         ]
     },
     {
