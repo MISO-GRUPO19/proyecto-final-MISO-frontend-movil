@@ -13,6 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Generate package-lock.json
+        working-directory: app-movil
+        run: npm install --package-lock-only
+      
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -32,12 +36,14 @@ jobs:
         run: google-chrome --version
 
       - name: Install npm dependencies
+        working-directory: app-movil
         run: |
           npm install
           npm update --depth 20
           npm audit fix --force || true
 
       - name: Run unit tests with coverage
+        working-directory: app-movil
         run: |
           export CHROME_BIN=/usr/bin/google-chrome
           xvfb-run -a npm test -- --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
@@ -47,4 +53,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage/
+          path: app-movil/coverage/
