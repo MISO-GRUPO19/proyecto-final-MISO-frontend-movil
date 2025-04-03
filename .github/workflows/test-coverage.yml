@@ -1,0 +1,50 @@
+name: Run Unit Tests with Coverage
+
+on:
+  push:
+    branches:
+      - feature/*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev wget xvfb
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Verify Chrome installation
+        run: google-chrome --version
+
+      - name: Install npm dependencies
+        run: |
+          npm install
+          npm update --depth 20
+          npm audit fix --force || true
+
+      - name: Run unit tests with coverage
+        run: |
+          export CHROME_BIN=/usr/bin/google-chrome
+          xvfb-run -a npm test -- --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
