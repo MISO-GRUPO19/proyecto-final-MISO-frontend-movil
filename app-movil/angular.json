@@ -21,7 +21,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-               "src/favicon.ico",
+              "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
@@ -49,6 +49,14 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "android": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.android.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -61,6 +69,9 @@
             },
             "development": {
               "buildTarget": "app-movil:build:development"
+            },
+            "android": {
+              "buildTarget": "app-movil:build:android"
             }
           },
           "defaultConfiguration": "development"
@@ -88,8 +99,8 @@
               "node_modules/@ionic/angular/css/ionic.bundle.css"
             ],
             "scripts": [],
-            "codeCoverage": true,                       
-            "codeCoverageExclude": [                    
+            "codeCoverage": true,
+            "codeCoverageExclude": [
               "src/main.ts",
               "src/environments/**",
               "src/polyfills.ts"
