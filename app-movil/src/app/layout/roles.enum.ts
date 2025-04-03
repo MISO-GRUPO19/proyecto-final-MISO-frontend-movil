@@ -1,4 +1,5 @@
-export enum rolesEnum{
-    client = 1,
-    seller = 2,
+export enum rolesEnum {
+    Administrador = 1,
+    Vendedor = 2,
+    Cliente = 3
 }

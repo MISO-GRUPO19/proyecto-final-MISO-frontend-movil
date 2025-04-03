@@ -1,40 +1,45 @@
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="products">
-      <ion-icon name="grid-outline"></ion-icon>
-      Productos
-    </ion-tab-button>
-    <ion-tab-button tab="reports" *ngIf="roleId === roles.client">
-      <ion-icon name="receipt-outline"></ion-icon>
-      Reportes
-    </ion-tab-button>   
-    <ion-tab-button tab="deliveries" *ngIf="roleId === roles.client">
-      <ion-icon name="cube-outline"></ion-icon>
-      Entregas
-    </ion-tab-button>
-  
-    <ion-tab-button tab="profile" *ngIf="roleId === roles.client">
-      <ion-icon name="person-outline"></ion-icon>
-      Perfil
-    </ion-tab-button>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
-    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
-      <ion-icon name="list-outline"></ion-icon>
-      Inventario
-    </ion-tab-button>   
-    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
-      <ion-icon name="car-outline"></ion-icon>
-      Visitas
-    </ion-tab-button>
-    <ion-tab-button tab="shopping-cart" >
-      <ion-icon name="cart-outline"></ion-icon>
-      Carrito
-    </ion-tab-button>
-    <ion-tab-button tab="inventory" *ngIf="roleId === roles.seller">
-      <ion-icon name="person-outline"></ion-icon>
-      Clientes
-    </ion-tab-button>
-  
-  </ion-tab-bar>
-</ion-tabs>
+<nav class="tab-bar">
+  <button *ngIf="true" routerLink="/products">
+    <span class="material-icons-outlined">grid_view</span>
+    Productos
+  </button>
 
+  <button *ngIf="roleId === roles.Cliente" routerLink="/reports">
+    <span class="material-icons-outlined">receipt_long</span>
+    Reportes
+  </button>
+
+  <button *ngIf="roleId === roles.Cliente" routerLink="/deliveries">
+    <span class="material-icons-outlined">local_shipping</span>
+    Entregas
+  </button>
+
+  <button *ngIf="roleId === roles.Cliente" routerLink="/profile">
+    <span class="material-icons-outlined">person</span>
+    Perfil
+  </button>
+
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/inventory">
+    <span class="material-icons-outlined">inventory_2</span>
+    Inventario
+  </button>
+
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/visits">
+    <span class="material-icons-outlined">directions_car</span>
+    Visitas
+  </button>
+
+  <button routerLink="/shopping-cart">
+    <span class="material-icons-outlined">shopping_cart</span>
+    Carrito
+  </button>
+
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/clients">
+    <span class="material-icons-outlined">groups</span>
+    Clientes
+  </button>
+</nav>
+
+<router-outlet></router-outlet>

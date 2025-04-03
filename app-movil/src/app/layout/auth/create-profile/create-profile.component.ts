@@ -4,11 +4,12 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-create-profile',
   templateUrl: './create-profile.component.html',
   styleUrls: ['./create-profile.component.scss'],
+  standalone: true
 })
-export class CreateProfileComponent  implements OnInit {
+export class CreateProfileComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
 }

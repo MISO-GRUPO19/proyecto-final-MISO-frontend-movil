@@ -51,7 +51,9 @@
         style="color: #2563eb; border: 1px solid #2563eb;">
         Iniciar sesión
       </button>
-
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
     </form>
 
     <!-- Registro -->
