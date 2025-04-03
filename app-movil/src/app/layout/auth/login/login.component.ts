@@ -10,6 +10,7 @@ import { addIcons } from 'ionicons';
 import { mail, lockClosed } from 'ionicons/icons';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthManager } from '../services/auth.service';
+import { rolesEnum } from '../../roles.enum';
 
 @Component({
   selector: 'app-login',
@@ -42,11 +43,16 @@ export class LoginComponent implements OnInit {
 
     this.authManager.login(this.formGroup.value).subscribe({
       next: (response) => {
-        sessionStorage.setItem('access_token', response.access_token);
-        sessionStorage.setItem('refresh_token', response.refresh_token);
-        sessionStorage.setItem('user', JSON.stringify(response.user));
+        if (response.user.role === rolesEnum.Administrador) {
+          this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
+        }
+        else {
+          sessionStorage.setItem('access_token', response.access_token);
+          sessionStorage.setItem('refresh_token', response.refresh_token);
+          sessionStorage.setItem('user', JSON.stringify(response.user));
 
-        this.router.navigate(['/home']);
+          this.router.navigate(['/home']);
+        }
       },
       error: (err) => {
         console.error(err);

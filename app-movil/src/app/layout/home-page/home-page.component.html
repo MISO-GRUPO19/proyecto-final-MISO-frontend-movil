@@ -6,27 +6,27 @@
     Productos
   </button>
 
-  <button *ngIf="roleId === roles.client" routerLink="/reports">
+  <button *ngIf="roleId === roles.Cliente" routerLink="/reports">
     <span class="material-icons-outlined">receipt_long</span>
     Reportes
   </button>
 
-  <button *ngIf="roleId === roles.client" routerLink="/deliveries">
+  <button *ngIf="roleId === roles.Cliente" routerLink="/deliveries">
     <span class="material-icons-outlined">local_shipping</span>
     Entregas
   </button>
 
-  <button *ngIf="roleId === roles.client" routerLink="/profile">
+  <button *ngIf="roleId === roles.Cliente" routerLink="/profile">
     <span class="material-icons-outlined">person</span>
     Perfil
   </button>
 
-  <button *ngIf="roleId === roles.seller" routerLink="/inventory">
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/inventory">
     <span class="material-icons-outlined">inventory_2</span>
     Inventario
   </button>
 
-  <button *ngIf="roleId === roles.seller" routerLink="/visits">
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/visits">
     <span class="material-icons-outlined">directions_car</span>
     Visitas
   </button>
@@ -36,7 +36,7 @@
     Carrito
   </button>
 
-  <button *ngIf="roleId === roles.seller" routerLink="/clients">
+  <button *ngIf="roleId === roles.Vendedor" routerLink="/clients">
     <span class="material-icons-outlined">groups</span>
     Clientes
   </button>
