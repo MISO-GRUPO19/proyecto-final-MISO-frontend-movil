@@ -87,7 +87,13 @@
               "node_modules/@ionic/angular/css/core.css",
               "node_modules/@ionic/angular/css/ionic.bundle.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "codeCoverage": true,                       
+            "codeCoverageExclude": [                    
+              "src/main.ts",
+              "src/environments/**",
+              "src/polyfills.ts"
+            ]
           }
         }
       }
