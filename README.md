@@ -1,6 +1,6 @@
 npm install: Instalar dependencias de Angular.
 
-ng build: construir proyecto
+ng build --configuration=android: construir proyecto
 
 npx cap add android: Regenera la plataforma Android (si la eliminaste).
 
