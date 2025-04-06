@@ -17,6 +17,10 @@ describe('HomePageComponent', () => {
     fixture.detectChanges();
   }));
 
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -32,7 +36,7 @@ describe('HomePageComponent', () => {
 
   it('should not set roleId if no user data exists in sessionStorage', () => {
     sessionStorage.removeItem('user');
-    
+
     component.ngOnInit();
 
     expect(component.roleId).toBeUndefined();
