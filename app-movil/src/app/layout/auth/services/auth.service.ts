@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { inject, Injectable } from '@angular/core';
+import { LoginResponse } from '../models/login-form.model';
 
 @Injectable({
     providedIn: 'root',
@@ -13,8 +14,8 @@ export class AuthManager {
 
     constructor() { }
 
-    login(credentials: { email: string; password: string }): Observable<any> {
-        return this.http.post<any>(this.apiUrl, credentials).pipe(
+    login(credentials: { email: string; password: string }): Observable<LoginResponse> {
+        return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
             tap(response => {
                 sessionStorage.setItem('access_token', response.access_token);
                 sessionStorage.setItem('refresh_token', response.refresh_token);

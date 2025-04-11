@@ -1,9 +1,9 @@
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { IonicModule, IonIcon } from '@ionic/angular';
-import { LoginRequest } from '../models/login-form.model';
+import { LoginRequest, LoginResponse } from '../models/login-form.model';
 import { IFormGroup, RxFormBuilder, RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { HttpClientModule } from '@angular/common/http';
 import { addIcons } from 'ionicons';
@@ -17,7 +17,7 @@ import { rolesEnum } from '../../roles.enum';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, RxReactiveFormsModule, ReactiveFormsModule, TranslateModule],
+  imports: [IonicModule, CommonModule, RxReactiveFormsModule, ReactiveFormsModule, TranslateModule, RouterModule],
 })
 export class LoginComponent implements OnInit {
   formGroup!: IFormGroup<LoginRequest>;
@@ -42,16 +42,24 @@ export class LoginComponent implements OnInit {
     if (this.formGroup.invalid) return;
 
     this.authManager.login(this.formGroup.value).subscribe({
-      next: (response) => {
-        if (response.user.role === rolesEnum.Administrador) {
-          this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
-        }
-        else {
-          sessionStorage.setItem('access_token', response.access_token);
-          sessionStorage.setItem('refresh_token', response.refresh_token);
-          sessionStorage.setItem('user', JSON.stringify(response.user));
-
-          this.router.navigate(['/home']);
+      next: (response: LoginResponse) => {
+        switch (response.user.role) {
+          case rolesEnum.Administrador:
+            this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
+            break;
+          case rolesEnum.Cliente:
+            if (response.user.role === rolesEnum.Cliente) {
+              this.router.navigate(['/profile']);
+            }
+            else {
+              this.sessionStorage(response);
+            }
+            break;
+          case rolesEnum.Vendedor:
+            this.sessionStorage(response);
+            break;
+          default:
+            break;
         }
       },
       error: (err) => {
@@ -59,6 +67,16 @@ export class LoginComponent implements OnInit {
         this.error = err.error?.message || 'Error de autenticación';
       }
     });
+  }
+
+  sessionStorage(response: LoginResponse) {
+    sessionStorage.setItem('access_token', response.access_token);
+    sessionStorage.setItem('refresh_token', response.refresh_token);
+    sessionStorage.setItem('user', JSON.stringify(response.user));
+
+
+    this.router.navigate(['/home']);
+
   }
 
 }

@@ -11,3 +11,13 @@ export class LoginRequest {
     public password: string = '';
 }
 
+export class LoginResponse {
+    public access_token: string = '';
+    public refresh_token: string = '';
+    public user: UserResponse = new UserResponse();
+}
+export class UserResponse {
+    public email: string = '';
+    public id: string = '';
+    public role: number = 0;
+}

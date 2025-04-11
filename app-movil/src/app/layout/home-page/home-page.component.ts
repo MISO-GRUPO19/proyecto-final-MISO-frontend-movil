@@ -12,7 +12,7 @@ import { RouterOutlet } from '@angular/router';
   imports: [CommonModule, RouterOutlet]
 })
 export class HomePageComponent implements OnInit {
-  public roleId?: number;
+  public roleId?: number = rolesEnum.Cliente;
   public roles = rolesEnum;
 
   constructor() { }
