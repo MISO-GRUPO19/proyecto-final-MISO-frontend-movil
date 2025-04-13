@@ -39,28 +39,26 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     debugger;
-    // if (this.formGroup.invalid) return;
+    if (this.formGroup.invalid) return;
 
-    this.router.navigate(['/profile']);
 
-    // this.authManager.login(this.formGroup.value).subscribe({
-    //   next: (response) => {
-    //     if (response.user.role === rolesEnum.Administrador) {
-    //       this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
-    //     }
-    //     else {
-    //       sessionStorage.setItem('access_token', response.access_token);
-    //       sessionStorage.setItem('refresh_token', response.refresh_token);
-    //       sessionStorage.setItem('user', JSON.stringify(response.user));
-
-    //       this.router.navigate(['/home']);
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.error(err);
-    //     this.error = err.error?.message || 'Error de autenticación';
-    //   }
-    // });
+    this.authManager.registerCustomers({
+      email: this.formGroup.controls.email.value,
+      password: this.formGroup.controls.password.value,
+      confirm_password: this.formGroup.controls.confirmPassword.value,
+      role: rolesEnum.Cliente
+    }).subscribe({
+      next: (response) => {
+        const query = {
+          email: this.formGroup.controls.email.value,
+        };
+        this.router.navigate(['/profile'], { queryParams: query });
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = err.error?.message || 'Error de autenticación';
+      }
+    });
   }
 
 }

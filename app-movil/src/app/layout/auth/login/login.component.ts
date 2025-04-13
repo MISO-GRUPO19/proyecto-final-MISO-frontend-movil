@@ -48,15 +48,20 @@ export class LoginComponent implements OnInit {
             this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
             break;
           case rolesEnum.Cliente:
+            this.sessionStorage(response);
             if (response.user.role === rolesEnum.Cliente) {
-              this.router.navigate(['/profile']);
+              const query = {
+                email: this.formGroup.controls.email.value,
+              };
+              this.router.navigate(['/profile'], { queryParams: query });
             }
             else {
-              this.sessionStorage(response);
+              this.router.navigate(['/home']);
             }
             break;
           case rolesEnum.Vendedor:
             this.sessionStorage(response);
+            this.router.navigate(['/home']);
             break;
           default:
             break;
@@ -73,9 +78,6 @@ export class LoginComponent implements OnInit {
     sessionStorage.setItem('access_token', response.access_token);
     sessionStorage.setItem('refresh_token', response.refresh_token);
     sessionStorage.setItem('user', JSON.stringify(response.user));
-
-
-    this.router.navigate(['/home']);
 
   }
 
