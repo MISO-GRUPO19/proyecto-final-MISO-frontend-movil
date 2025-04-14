@@ -53,7 +53,7 @@ export class ProfileFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.formGroup.invalid) return;
-    this.router.navigate(['/home']);
+
     this.authManager.createCustomers({
       firstName: this.formGroup.controls.name.value,
       lastName: this.formGroup.controls.lastName.value,
@@ -63,7 +63,7 @@ export class ProfileFormComponent implements OnInit {
       email: this.email ? this.email : ""
     }).subscribe({
       next: (response) => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/register-success']);
       },
       error: (err) => {
         console.error(err);

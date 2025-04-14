@@ -31,6 +31,7 @@ export class AuthManager {
     createCustomers(form: { firstName: string; lastName: string; country: string; address: string; phoneNumber: number; email: string }): Observable<any> {
         return this.http.post<any>(this.apiUrl + '/users/customers', form);
     }
+
     logout() {
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('refresh_token');
