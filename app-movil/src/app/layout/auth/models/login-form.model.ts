@@ -14,6 +14,7 @@ export class LoginRequest {
 export class LoginResponse {
     public access_token: string = '';
     public refresh_token: string = '';
+    public isCustomer: boolean = false;
     public user: UserResponse = new UserResponse();
 }
 export class UserResponse {

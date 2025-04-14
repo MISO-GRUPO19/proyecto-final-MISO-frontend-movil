@@ -56,7 +56,7 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.error = err.error?.message || 'Error de autenticación';
+        this.error = err.error?.mssg || 'Error de autenticación';
       }
     });
   }

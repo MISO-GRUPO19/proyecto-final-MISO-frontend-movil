@@ -12,12 +12,13 @@ import { RouterOutlet } from '@angular/router';
   imports: [CommonModule, RouterOutlet]
 })
 export class HomePageComponent implements OnInit {
-  public roleId?: number = rolesEnum.Cliente;
+  public roleId?: number;
   public roles = rolesEnum;
 
   constructor() { }
 
   ngOnInit() {
+    debugger;
     const userData = sessionStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);

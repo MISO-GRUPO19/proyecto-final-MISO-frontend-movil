@@ -43,13 +43,14 @@ export class LoginComponent implements OnInit {
 
     this.authManager.login(this.formGroup.value).subscribe({
       next: (response: LoginResponse) => {
+        debugger;
         switch (response.user.role) {
           case rolesEnum.Administrador:
             this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
             break;
           case rolesEnum.Cliente:
             this.sessionStorage(response);
-            if (response.user.role === rolesEnum.Cliente) {
+            if (!response.isCustomer) {
               const query = {
                 email: this.formGroup.controls.email.value,
               };
@@ -69,7 +70,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.error = err.error?.message || 'Error de autenticación';
+        this.error = err.error?.mssg || 'Error de autenticación';
       }
     });
   }
@@ -78,7 +79,6 @@ export class LoginComponent implements OnInit {
     sessionStorage.setItem('access_token', response.access_token);
     sessionStorage.setItem('refresh_token', response.refresh_token);
     sessionStorage.setItem('user', JSON.stringify(response.user));
-
   }
 
 }

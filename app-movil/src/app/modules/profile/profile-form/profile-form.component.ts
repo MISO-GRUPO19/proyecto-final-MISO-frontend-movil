@@ -53,7 +53,7 @@ export class ProfileFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.formGroup.invalid) return;
-
+    debugger
     this.authManager.createCustomers({
       firstName: this.formGroup.controls.name.value,
       lastName: this.formGroup.controls.lastName.value,
@@ -67,7 +67,7 @@ export class ProfileFormComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.error = err.error?.message || 'Error de autenticación';
+        this.error = err.error?.mssg || 'Error de autenticación';
       }
     });
   }
