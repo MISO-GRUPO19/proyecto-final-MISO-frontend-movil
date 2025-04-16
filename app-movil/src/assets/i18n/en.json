@@ -4,6 +4,12 @@
       "email": "Email",
       "password": "Password",
       "submit": "Sign In"
+    },
+    "Validations": {
+      "IsRequired": "This field is required" ,
+      "ThePasswordsAreNotEquals": "The passwords are not equals",
+      "MustBeEmail": "Must Be Email",
+      "IsRequiredTrue": "Is Required" 
     }
   }
   

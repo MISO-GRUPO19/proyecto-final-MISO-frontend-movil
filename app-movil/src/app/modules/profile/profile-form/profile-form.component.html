@@ -1,0 +1,98 @@
+<!-- Encabezado -->
+<div class="bg-blue-600 text-white py-4 px-6 flex justify-center items-center">
+  <h2 class="font-semibold text-base">Crea tu perfil</h2>
+</div>
+
+<!-- Contenido centrado -->
+<div class="min-h-screen bg-[#f4f6fb] flex justify-center px-4 pt-20 pb-12">
+  <div class="w-full max-w-sm">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="space-y-5 mt-12">
+
+
+      <!-- Campo Nombre -->
+      <div>
+        <div class="flex items-center border border-blue-600 rounded-xl px-4 py-4 bg-white">
+          <span class="material-symbols-outlined text-blue-600 text-[24px] mr-3">person</span>
+          <input type="text" formControlName="name" placeholder="Nombre"
+            class="w-full text-[17px] bg-transparent outline-none placeholder-gray-400 font-medium" />
+        </div>
+
+        <!-- Mensaje de error debajo -->
+        <div *ngIf="formGroup.controls['name'].errors && formGroup.controls['name'].touched"
+          class="text-red-500 text-sm mt-1 ml-2">
+          {{ formGroup.controls['name'].errorMessage| translate }}
+        </div>
+      </div>
+
+
+      <!-- Apellido -->
+      <div>
+        <div class="flex items-center border border-blue-600 rounded-xl px-4 py-4 bg-white">
+          <span class="material-symbols-outlined text-blue-600 text-[24px] mr-3">person</span>
+          <input type="text" formControlName="lastName" placeholder="Apellido"
+            class="w-full text-[17px] bg-transparent outline-none placeholder-gray-400 font-medium" />
+        </div>
+
+        <!-- Mensaje de error debajo -->
+        <div *ngIf="formGroup.controls['lastName'].errors && formGroup.controls['lastName'].touched"
+          class="text-red-500 text-sm mt-1 ml-2">
+          {{ formGroup.controls['lastName'].errorMessage | translate}}
+        </div>
+      </div>
+
+
+      <!-- Teléfono -->
+      <div>
+        <div class="flex items-center border border-blue-600 rounded-xl px-4 py-4 bg-white">
+          <span class="material-symbols-outlined text-blue-600 text-[24px] mr-3">call</span>
+          <input type="tel" formControlName="telphone" placeholder="Número de teléfono"
+            class="w-full text-[17px] bg-transparent outline-none placeholder-gray-400 font-medium" />
+        </div>
+        <!-- Mensaje de error debajo -->
+        <div *ngIf="formGroup.controls['telphone'].errors && formGroup.controls['telphone'].touched"
+          class="text-red-500 text-sm mt-1 ml-2">
+          {{ formGroup.controls['telphone'].errorMessage | translate}}
+        </div>
+      </div>
+      <!-- Dirección -->
+      <div>
+        <div class="flex items-center border border-blue-600 rounded-xl px-4 py-4 bg-white">
+          <span class="material-symbols-outlined text-blue-600 text-[24px] mr-3">location_on</span>
+          <input type="text" formControlName="address" placeholder="Dirección principal"
+            class="w-full text-[17px] bg-transparent outline-none placeholder-gray-400 font-medium" />
+
+        </div>
+        <!-- Mensaje de error debajo -->
+        <div *ngIf="formGroup.controls['address'].errors && formGroup.controls['address'].touched"
+          class="text-red-500 text-sm mt-1 ml-2">
+          {{ formGroup.controls['address'].errorMessage | translate}}
+        </div>
+      </div>
+      <!-- País -->
+      <div class="relative">
+        <div class="flex items-center border border-blue-600 rounded-xl px-4 py-4 bg-white">
+          <span class="material-symbols-outlined text-blue-600 text-[24px] mr-3">location_on</span>
+          <select formControlName="country"
+            class="w-full text-[17px] bg-transparent outline-none text-gray-400 font-medium appearance-none pr-6">
+            <option value="" disabled selected hidden>País</option>
+            <option *ngFor="let pais of countries" [value]="pais" class="text-black">{{ pais }}</option>
+          </select>
+        </div>
+        <span
+          class="material-symbols-outlined text-gray-500 text-[20px] absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
+          expand_more
+        </span>
+        <div *ngIf="formGroup.controls['country'].errors && formGroup.controls['country'].touched"
+          class="text-red-500 text-sm">
+          {{ formGroup.controls['country'].errorMessage | translate}}
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <button type="submit"
+        class="w-full py-3 mt-4 rounded-full bg-white text-blue-600 border border-blue-600 font-semibold hover:bg-blue-50 transition">
+        Guardar
+      </button>
+    </form>
+  </div>
+</div>

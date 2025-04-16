@@ -4,6 +4,11 @@
       "email": "Correo electrónico",
       "password": "Contraseña",
       "submit": "Ingresar"
+    },
+    "Validations": {
+      "IsRequired": "Este campo es requerido",
+      "ThePasswordsAreNotEquals": "Las contraseñas no coinciden",
+      "MustBeEmail": "Debe ser un correo electrónico",
     }
   }
   
