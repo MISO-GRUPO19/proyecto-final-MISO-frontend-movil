@@ -30,13 +30,13 @@ public class FeatureHU34 {
 
   @Before
   public void startApp() {
-    // Initialize UiDevice instance
+
     device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-    // Press home button
+
     device.pressHome();
 
-    // Wait for launcher
+
     String launcherPackage = device.getLauncherPackageName();
     assertThat(launcherPackage, notNullValue());
     device.wait(
@@ -44,7 +44,7 @@ public class FeatureHU34 {
       LAUNCH_TIMEOUT
     );
 
-    // Launch the app
+
     Context context = ApplicationProvider.getApplicationContext();
     Intent intent = context.getPackageManager().getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
     if (intent != null) {
@@ -52,7 +52,7 @@ public class FeatureHU34 {
       context.startActivity(intent);
     }
 
-    // Wait for the app to appear
+
     device.wait(
       Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
       LAUNCH_TIMEOUT
@@ -61,7 +61,7 @@ public class FeatureHU34 {
 
   @Test
   public void loginSuccessful() {
-    // Verify app launched successfully
+
     UiObject2 emailInput = device.wait(
       Until.findObject(By.hint("Email")),
       5000
@@ -80,13 +80,6 @@ public class FeatureHU34 {
     );
     loginButton.click();
 
-    /*
-    UiObject2 textFound =  device.wait(
-      Until.findObject(By.textContains("Productos")), 10000);
-     */
-    //List<UiObject2> buttons = device.findObjects(By.hintContains("Carrito"));
-    //UiObject2 root = device.findObject(By.pkg("com.miempresa.miapp"));
-    //pendiente modificar
     boolean textFounded = device.wait(Until.hasObject(By.text("Home")), 5000);
     Assert.assertTrue(textFounded);
   }
@@ -111,7 +104,7 @@ public class FeatureHU34 {
     );
     loginButton.click();
     boolean textFound =  device.wait(
-      Until.hasObject(By.textContains("Error de")), 5000);
+      Until.hasObject(By.text("Error de autenticación")), 5000);
     Assert.assertTrue(textFound);
   }
 
