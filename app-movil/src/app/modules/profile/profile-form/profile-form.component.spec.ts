@@ -1,10 +1,15 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ProfileFormComponent } from './profile-form.component';
-import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { AuthManager } from '../../../layout/auth/services/auth.service';
+import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { RouterTestingModule } from '@angular/router/testing';
+
+const mockActivatedRoute = {
+  queryParamMap: of(convertToParamMap({ email: 'test@correo.com' }))
+};
 
 describe('ProfileFormComponent', () => {
   let component: ProfileFormComponent;
@@ -17,11 +22,13 @@ describe('ProfileFormComponent', () => {
     authManagerSpy = jasmine.createSpyObj('AuthManager', ['createCustomers']);
 
     await TestBed.configureTestingModule({
-      imports: [ProfileFormComponent],
+      imports: [ProfileFormComponent, TranslateModule.forRoot(), RouterTestingModule],
       providers: [
         RxFormBuilder,
+        TranslateService,
+        TranslateStore,
         { provide: Router, useValue: routerSpy },
-        { provide: ActivatedRoute, useValue: { queryParamMap: of({ params: { email: 'test@correo.com' } }) } },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: AuthManager, useValue: authManagerSpy }
       ]
     }).compileComponents();
@@ -46,11 +53,13 @@ describe('ProfileFormComponent', () => {
   });
 
   it('debe enviar los datos si el formulario es válido', fakeAsync(() => {
-    component.formGroup.controls.name.setValue('Lucia');
-    component.formGroup.controls.lastName.setValue('Colorado');
-    component.formGroup.controls.country.setValue('Colombia');
-    component.formGroup.controls.address.setValue('Calle Falsa 123');
-    component.formGroup.controls.telphone.setValue('3001234567');
+    component.formGroup.setValue({
+      name: 'Lucia',
+      lastName: 'Colorado',
+      country: 'Colombia',
+      address: 'Calle Falsa 123',
+      telphone: '3001234567'
+    });
     component.email = 'lucia@correo.com';
 
     authManagerSpy.createCustomers.and.returnValue(of({}));
@@ -66,19 +75,21 @@ describe('ProfileFormComponent', () => {
       phoneNumber: 3001234567,
       email: 'lucia@correo.com'
     });
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/register-success']);
   }));
 
   it('debe manejar errores al enviar datos', fakeAsync(() => {
-    component.formGroup.controls.name.setValue('Lucia');
-    component.formGroup.controls.lastName.setValue('Colorado');
-    component.formGroup.controls.country.setValue('Colombia');
-    component.formGroup.controls.address.setValue('Calle Falsa 123');
-    component.formGroup.controls.telphone.setValue('3001234567');
+    component.formGroup.setValue({
+      name: 'Lucia',
+      lastName: 'Colorado',
+      country: 'Colombia',
+      address: 'Calle Falsa 123',
+      telphone: '3001234567'
+    });
     component.email = 'lucia@correo.com';
 
-    const mockError = { error: { message: 'Error del servidor' } };
-    authManagerSpy.createCustomers.and.returnValue(throwError(mockError));
+    const mockError = { error: { mssg: 'Error del servidor' } };
+    authManagerSpy.createCustomers.and.returnValue(throwError(() => mockError));
 
     component.onSubmit();
     tick();
