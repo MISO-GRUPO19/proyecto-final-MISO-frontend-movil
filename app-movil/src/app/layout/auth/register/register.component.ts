@@ -38,7 +38,6 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    debugger;
     if (this.formGroup.invalid) return;
 
 

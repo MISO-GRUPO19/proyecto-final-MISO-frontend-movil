@@ -43,7 +43,6 @@ export class LoginComponent implements OnInit {
 
     this.authManager.login(this.formGroup.value).subscribe({
       next: (response: LoginResponse) => {
-        debugger;
         switch (response.user.role) {
           case rolesEnum.Administrador:
             this.error = 'Los usuarios con el rol de Administrador no pueden ingresar.';
@@ -57,12 +56,12 @@ export class LoginComponent implements OnInit {
               this.router.navigate(['/profile'], { queryParams: query });
             }
             else {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/home/deliveries']);
             }
             break;
           case rolesEnum.Vendedor:
             this.sessionStorage(response);
-            this.router.navigate(['/home']);
+            this.router.navigate(['/home/inventory']);
             break;
           default:
             break;

@@ -53,7 +53,6 @@ export class ProfileFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.formGroup.invalid) return;
-    debugger
     this.authManager.createCustomers({
       firstName: this.formGroup.controls.name.value,
       lastName: this.formGroup.controls.lastName.value,

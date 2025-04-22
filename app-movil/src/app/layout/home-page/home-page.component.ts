@@ -2,23 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { rolesEnum } from '../roles.enum';
 
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterOutlet]
+  imports: [CommonModule, RouterOutlet, RouterModule]
 })
 export class HomePageComponent implements OnInit {
   public roleId?: number;
   public roles = rolesEnum;
-
-  constructor() { }
+  pageTitle = '';
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    debugger;
+    this.updatePageTitle();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updatePageTitle();
+      });
     const userData = sessionStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
@@ -26,4 +32,25 @@ export class HomePageComponent implements OnInit {
     }
   }
 
+  private getDeepestRoute(route: ActivatedRoute): ActivatedRoute {
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+    return route;
+  }
+  private updatePageTitle(): void {
+    const childRoute = this.getDeepestRoute(this.route);
+
+    if (childRoute.snapshot.data && childRoute.snapshot.data['title']) {
+      this.pageTitle = childRoute.snapshot.data['title'];
+    } else {
+      this.pageTitle = 'Inicio';
+    }
+  }
+  logout(): void {
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('user');
+    this.router.navigate(['/auth/login']);
+  }
 }
