@@ -1,10 +1,4 @@
-<div class="min-h-screen bg-[#f4f6fb] flex flex-col justify-start items-center px-6 pt-16">
-  <div class="w-full max-w-sm">
 
-    <!-- Logo -->
-    <div class="flex justify-center mb-10">
-      <img src="assets/logo-ccp.png" alt="Logo CCP" class="h-14" />
-    </div>
 
     <!-- Título -->
     <h1 class="text-3xl font-semibold text-center text-blue-600 mb-2">Bienvenido</h1>
@@ -60,8 +54,5 @@
     <p class="text-center text-sm text-gray-600 mt-6">
       ¿No tienes una cuenta?
       <br class="block sm:hidden" />
-      <a href="#" class="text-blue-600 font-semibold hover:underline">Regístrate</a>
+      <a class="text-blue-600 font-semibold hover:underline" [routerLink]="['../register']" >Regístrate</a>
     </p>
-    
-  </div>
-</div>

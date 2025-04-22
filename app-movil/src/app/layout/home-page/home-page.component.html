@@ -1,45 +1,72 @@
+<!-- Header con título dinámico y botón de logout -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-<h1> Home </h1>
-<nav class="tab-bar">
-  <button *ngIf="true" routerLink="/products">
-    <span class="material-icons-outlined">grid_view</span>
-    Productos
-  </button>
 
-  <button *ngIf="roleId === roles.Cliente" routerLink="/reports">
-    <span class="material-icons-outlined">receipt_long</span>
-    Reportes
-  </button>
+<header class="fixed top-0 left-0 right-0 bg-blue-600 text-white py-4 px-4 shadow-md z-50 flex items-center justify-between">
+  
+  <!-- Logo a la izquierda -->
+  <div class="flex items-center">
+    <img src="assets/logo-ccp.png" alt="Logo" class="h-10" />
+  </div>
 
-  <button *ngIf="roleId === roles.Cliente" routerLink="/deliveries">
-    <span class="material-icons-outlined">local_shipping</span>
-    Entregas
-  </button>
+  <!-- Título centrado absolutamente -->
+  <div class="absolute left-1/2 transform -translate-x-1/2">
+    <h2 class="font-semibold text-base text-white">{{ pageTitle }}</h2>
+  </div>
 
-  <button *ngIf="roleId === roles.Cliente" routerLink="/profile">
-    <span class="material-icons-outlined">person</span>
-    Perfil
+  <!-- Botón de logout a la derecha -->
+  <button (click)="logout()" class="material-icons-outlined text-white text-2xl">
+    logout
   </button>
+</header>
 
-  <button *ngIf="roleId === roles.Vendedor" routerLink="/inventory">
-    <span class="material-icons-outlined">inventory_2</span>
-    Inventario
-  </button>
+<!-- Contenido principal con espacio para header y footer -->
+<main class="pt-16 pb-20 px-4 overflow-y-auto">
+  <router-outlet></router-outlet>
+</main>
 
-  <button *ngIf="roleId === roles.Vendedor" routerLink="/visits">
-    <span class="material-icons-outlined">directions_car</span>
-    Visitas
-  </button>
+<!-- Menú inferior -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50">
+  <div class="flex justify-around items-center text-xs text-gray-600 py-2">
 
-  <button routerLink="/shopping-cart">
-    <span class="material-icons-outlined">shopping_cart</span>
-    Carrito
-  </button>
+    <a [routerLink]="['/home/products']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">grid_view</span>
+      <span>Productos</span>
+    </a>
 
-  <button *ngIf="roleId === roles.Vendedor" routerLink="/clients">
-    <span class="material-icons-outlined">groups</span>
-    Clientes
-  </button>
+    <a *ngIf="roleId === roles.Cliente" [routerLink]="['/home/reports']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">receipt_long</span>
+      <span>Reportes</span>
+    </a>
+
+    <a *ngIf="roleId === roles.Cliente" [routerLink]="['/home/deliveries']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">local_shipping</span>
+      <span>Entregas</span>
+    </a>
+
+    <a *ngIf="roleId === roles.Cliente" [routerLink]="['/home/profile']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">person</span>
+      <span>Perfil</span>
+    </a>
+
+    <a *ngIf="roleId === roles.Vendedor" [routerLink]="['/home/inventory']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">inventory_2</span>
+      <span>Inventario</span>
+    </a>
+
+    <a *ngIf="roleId === roles.Vendedor" [routerLink]="['/home/visits']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">directions_car</span>
+      <span>Visitas</span>
+    </a>
+
+    <a [routerLink]="['/home/shopping-cart']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">shopping_cart</span>
+      <span>Carrito</span>
+    </a>
+
+    <a *ngIf="roleId === roles.Vendedor" [routerLink]="['/home/clients']" class="flex flex-col items-center hover:text-blue-600">
+      <span class="material-icons-outlined text-2xl">groups</span>
+      <span>Clientes</span>
+    </a>
+
+  </div>
 </nav>
-
-<router-outlet></router-outlet>
