@@ -33,10 +33,15 @@ jobs:
       - name: Verify Chrome installation
         run: google-chrome --version
 
+      - name: Update devkit to match Angular 19
+        working-directory: app-movil
+        run: |
+          npm install @angular-devkit/build-angular@19.2.8 --save-dev
+
       - name: Install npm dependencies
         working-directory: app-movil
         run: |
-          npm ci
+          npm ci || npm install
           npm audit fix --force || true
 
       - name: Verify Angular version
@@ -47,7 +52,7 @@ jobs:
         working-directory: app-movil
         run: |
           export CHROME_BIN=/usr/bin/google-chrome
-          xvfb-run -a npm run test -- --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
+          xvfb-run -a npx ng test --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
 
       - name: Upload coverage report
         if: always()
