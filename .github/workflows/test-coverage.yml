@@ -18,7 +18,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install system dependencies
+      - name: Install Angular CLI 19 globally
+        run: npm install -g @angular/cli@19
+
+      - name: Install system dependencies (Chrome + xvfb)
         run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev wget xvfb
@@ -33,15 +36,18 @@ jobs:
       - name: Install npm dependencies
         working-directory: app-movil
         run: |
-          npm install
-          npm update --depth 20
+          npm ci
           npm audit fix --force || true
+
+      - name: Verify Angular version
+        working-directory: app-movil
+        run: npx ng version
 
       - name: Run unit tests with coverage
         working-directory: app-movil
         run: |
           export CHROME_BIN=/usr/bin/google-chrome
-          xvfb-run -a npm test -- --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
+          xvfb-run -a npm run test -- --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false
 
       - name: Upload coverage report
         if: always()
