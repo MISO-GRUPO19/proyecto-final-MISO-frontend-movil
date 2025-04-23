@@ -1,99 +1,103 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProfileFormComponent } from './profile-form.component';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { of, throwError } from 'rxjs';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { AuthManager } from '../../../layout/auth/services/auth.service';
-import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { RouterTestingModule } from '@angular/router/testing';
-
-const mockActivatedRoute = {
-  queryParamMap: of(convertToParamMap({ email: 'test@correo.com' }))
-};
+import { of, throwError } from 'rxjs';
 
 describe('ProfileFormComponent', () => {
-  let component: ProfileFormComponent;
-  let fixture: ComponentFixture<ProfileFormComponent>;
-  let routerSpy: jasmine.SpyObj<Router>;
-  let authManagerSpy: jasmine.SpyObj<AuthManager>;
+    let component: ProfileFormComponent;
+    let fixture: ComponentFixture<ProfileFormComponent>;
+    let mockAuthManager: jasmine.SpyObj<AuthManager>;
+    let mockRouter: jasmine.SpyObj<Router>;
 
-  beforeEach(async () => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    authManagerSpy = jasmine.createSpyObj('AuthManager', ['createCustomers']);
+    beforeEach(async () => {
+        mockAuthManager = jasmine.createSpyObj('AuthManager', ['createCustomers']);
+        mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
-    await TestBed.configureTestingModule({
-      imports: [ProfileFormComponent, TranslateModule.forRoot(), RouterTestingModule],
-      providers: [
-        RxFormBuilder,
-        TranslateService,
-        TranslateStore,
-        { provide: Router, useValue: routerSpy },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: AuthManager, useValue: authManagerSpy }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ProfileFormComponent, TranslateModule.forRoot()],
+            providers: [
+                TranslateService,
+                RxFormBuilder,
+                { provide: Router, useValue: mockRouter },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        queryParamMap: of(convertToParamMap({ email: 'test@email.com' }))
+                    }
+                },
+                { provide: AuthManager, useValue: mockAuthManager }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ProfileFormComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('debe crear el componente', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('debe cargar el email desde los parámetros de la ruta', () => {
-    expect(component.email).toBe('test@correo.com');
-  });
-
-  it('no debe enviar el formulario si es inválido', () => {
-    spyOnProperty(component.formGroup, 'invalid', 'get').and.returnValue(true);
-    component.onSubmit();
-    expect(authManagerSpy.createCustomers).not.toHaveBeenCalled();
-  });
-
-  it('debe enviar los datos si el formulario es válido', fakeAsync(() => {
-    component.formGroup.setValue({
-      name: 'Lucia',
-      lastName: 'Colorado',
-      country: 'Colombia',
-      address: 'Calle Falsa 123',
-      telphone: '3001234567'
+        fixture = TestBed.createComponent(ProfileFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    component.email = 'lucia@correo.com';
 
-    authManagerSpy.createCustomers.and.returnValue(of({}));
-
-    component.onSubmit();
-    tick();
-
-    expect(authManagerSpy.createCustomers).toHaveBeenCalledWith({
-      firstName: 'Lucia',
-      lastName: 'Colorado',
-      country: 'Colombia',
-      address: 'Calle Falsa 123',
-      phoneNumber: 3001234567,
-      email: 'lucia@correo.com'
+    afterEach(() => {
+        // Garantizar desuscripción
+        component?.ngOnDestroy?.();
     });
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/register-success']);
-  }));
 
-  it('debe manejar errores al enviar datos', fakeAsync(() => {
-    component.formGroup.setValue({
-      name: 'Lucia',
-      lastName: 'Colorado',
-      country: 'Colombia',
-      address: 'Calle Falsa 123',
-      telphone: '3001234567'
+    it('debe crear el componente', () => {
+        expect(component).toBeTruthy();
     });
-    component.email = 'lucia@correo.com';
 
-    const mockError = { error: { mssg: 'Error del servidor' } };
-    authManagerSpy.createCustomers.and.returnValue(throwError(() => mockError));
+    it('debe guardar el email si viene por queryParam', () => {
+        expect(component.email).toBe('test@email.com');
+    });
 
-    component.onSubmit();
-    tick();
+    it('no debe enviar si el formulario es inválido', () => {
+        spyOnProperty(component.formGroup, 'invalid', 'get').and.returnValue(true);
+        component.onSubmit();
+        expect(mockAuthManager.createCustomers).not.toHaveBeenCalled();
+    });
 
-    expect(component.error).toBe('Error del servidor');
-  }));
+    it('debe llamar a createCustomers y redirigir a /register-success si es válido', () => {
+        component.email = 'cliente@email.com';
+        component.formGroup.setValue({
+            name: 'Juan',
+            lastName: 'Pérez',
+            country: 'Colombia',
+            address: 'Calle 123',
+            telphone: 3001234567
+        });
+
+        mockAuthManager.createCustomers.and.returnValue(of({}));
+
+        component.onSubmit();
+
+        expect(mockAuthManager.createCustomers).toHaveBeenCalledWith({
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            country: 'Colombia',
+            address: 'Calle 123',
+            phoneNumber: 3001234567,
+            email: 'cliente@email.com'
+        });
+
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/register-success']);
+    });
+
+    it('debe manejar el error y mostrar mensaje si el backend falla', () => {
+        component.email = 'cliente@email.com';
+        component.formGroup.setValue({
+            name: 'Juan',
+            lastName: 'Pérez',
+            country: 'Colombia',
+            address: 'Calle 123',
+            telphone: 3001234567
+        });
+
+        mockAuthManager.createCustomers.and.returnValue(
+            throwError(() => ({ error: { mssg: 'Fallo en creación' } }))
+        );
+
+        component.onSubmit();
+
+        expect(component.error).toBe('Fallo en creación');
+    });
 });

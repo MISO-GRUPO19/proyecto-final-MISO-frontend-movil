@@ -34,8 +34,6 @@ jobs:
         working-directory: app-movil
         run: |
           npm install
-          npm update --depth 20
-          npm audit fix --force || true
 
       - name: Run unit tests with coverage
         working-directory: app-movil
