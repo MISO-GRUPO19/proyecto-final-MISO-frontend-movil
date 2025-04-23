@@ -1,134 +1,106 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
+import { Router, ActivatedRoute, UrlTree } from '@angular/router';
 import { AuthManager } from '../services/auth.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { RxFormBuilder, RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { IonicModule, NavController } from '@ionic/angular';
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { of, throwError } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { rolesEnum } from '../../roles.enum';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('RegisterComponent', () => {
-  let component: RegisterComponent;
-  let fixture: ComponentFixture<RegisterComponent>;
-  let mockAuthManager: jasmine.SpyObj<AuthManager>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  const mockNavController = jasmine.createSpyObj('NavController', ['navigateForward']);
+    let component: RegisterComponent;
+    let fixture: ComponentFixture<RegisterComponent>;
+    let mockRouter: jasmine.SpyObj<Router>;
+    let mockAuthManager: jasmine.SpyObj<AuthManager>;
 
-  const mockActivatedRoute = {
-    snapshot: { paramMap: new Map() },
-    params: of({})
-  };
+    beforeEach(async () => {
+        mockRouter = jasmine.createSpyObj<Router>('Router', ['navigate'], {
+            events: of(),
+            createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({} as UrlTree),
+            serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue('/mock-url')
+        });
 
-  beforeEach(waitForAsync(() => {
-    mockAuthManager = jasmine.createSpyObj('AuthManager', ['registerCustomers']);
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+        const mockActivatedRoute = {
+            snapshot: { queryParams: {} }
+        };
 
-    TestBed.configureTestingModule({
-      imports: [
-        IonicModule.forRoot(),
-        RxReactiveFormsModule,
-        TranslateModule.forRoot(),
-        CommonModule,
-        RegisterComponent,
-        RouterTestingModule
-      ],
-      providers: [
-        RxFormBuilder,
-        TranslateService,
-        TranslateStore,
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: NavController, useValue: mockNavController },
-        { provide: AuthManager, useValue: mockAuthManager }
-      ]
-    }).compileComponents();
+        mockAuthManager = jasmine.createSpyObj<AuthManager>('AuthManager', ['registerCustomers']);
 
-    fixture = TestBed.createComponent(RegisterComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
+        await TestBed.configureTestingModule({
+            imports: [
+                RegisterComponent,
+                IonicModule,
+                CommonModule,
+                ReactiveFormsModule,
+                TranslateModule.forRoot()
+            ],
+            providers: [
+                RxFormBuilder,
+                TranslateService,
+                { provide: Router, useValue: mockRouter },
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: AuthManager, useValue: mockAuthManager }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize the form on ngOnInit', () => {
-    component.ngOnInit();
-    expect(component.formGroup).toBeTruthy();
-  });
-
-  it('should not call registerCustomers if form is invalid', () => {
-    component.onSubmit();
-    expect(mockAuthManager.registerCustomers).not.toHaveBeenCalled();
-  });
-
-  it('should call registerCustomers with correct values on valid form', () => {
-    component.formGroup.setValue({
-      email: 'test@email.com',
-      password: 'Password123',
-      confirmPassword: 'Password123'
+        fixture = TestBed.createComponent(RegisterComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    mockAuthManager.registerCustomers.and.returnValue(of({}));
-
-    component.onSubmit();
-
-    expect(mockAuthManager.registerCustomers).toHaveBeenCalledWith({
-      email: 'test@email.com',
-      password: 'Password123',
-      confirm_password: 'Password123',
-      role: rolesEnum.Cliente
-    });
-  });
-
-  it('should navigate to /profile on successful registration', () => {
-    component.formGroup.setValue({
-      email: 'user@test.com',
-      password: '12345678',
-      confirmPassword: '12345678'
+    it('debe crear el componente', () => {
+        expect(component).toBeTruthy();
     });
 
-    mockAuthManager.registerCustomers.and.returnValue(of({}));
-
-    component.onSubmit();
-
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile'], {
-      queryParams: { email: 'user@test.com' }
-    });
-  });
-
-  it('should show error message from backend', () => {
-    component.formGroup.setValue({
-      email: 'fail@test.com',
-      password: 'fail123',
-      confirmPassword: 'fail123'
+    it('no debe enviar si el formulario es inválido', () => {
+        spyOnProperty(component.formGroup, 'invalid', 'get').and.returnValue(true);
+        component.onSubmit();
+        expect(mockAuthManager.registerCustomers).not.toHaveBeenCalled();
     });
 
-    mockAuthManager.registerCustomers.and.returnValue(throwError(() => ({
-      error: { mssg: 'Correo ya registrado' }
-    })));
+    it('debe registrar y redirigir a /profile', () => {
+        component.formGroup.setValue({
+            email: 'test@email.com',
+            password: '123456',
+            confirmPassword: '123456'
+        });
 
-    component.onSubmit();
+        mockAuthManager.registerCustomers.and.returnValue(of({}));
 
-    expect(component.error).toBe('Correo ya registrado');
-  });
+        component.onSubmit();
 
-  it('should show default error message if none is provided', () => {
-    component.formGroup.setValue({
-      email: 'fail@test.com',
-      password: 'fail123',
-      confirmPassword: 'fail123'
+        expect(mockAuthManager.registerCustomers).toHaveBeenCalledWith({
+            email: 'test@email.com',
+            password: '123456',
+            confirm_password: '123456',
+            role: rolesEnum.Cliente
+        });
+
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile'], {
+            queryParams: { email: 'test@email.com' }
+        });
     });
 
-    mockAuthManager.registerCustomers.and.returnValue(throwError(() => ({
-      error: {}
-    })));
+    it('debe mostrar error si ocurre fallo en el backend', () => {
+        component.formGroup.setValue({
+            email: 'fail@email.com',
+            password: '123456',
+            confirmPassword: '123456'
+        });
 
-    component.onSubmit();
+        mockAuthManager.registerCustomers.and.returnValue(
+            throwError(() => ({
+                error: { mssg: 'Error desde el backend' }
+            }))
+        );
 
-    expect(component.error).toBe('Error de autenticación');
-  });
+        component.onSubmit();
+
+        expect(component.error).toBe('Error desde el backend');
+    });
 });

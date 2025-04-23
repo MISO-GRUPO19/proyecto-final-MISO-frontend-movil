@@ -11,7 +11,7 @@ export class ProfileForm {
     public lastName: string = '';
 
     @required({ message: 'Validations.IsRequired' })
-    public telphone: string = '';
+    public telphone: number = 0;
 
     @required({ message: 'Validations.IsRequired' })
     public address: string = '';
