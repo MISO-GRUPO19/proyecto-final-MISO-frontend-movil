@@ -80,33 +80,35 @@
           "builder": "@angular-devkit/build-angular:extract-i18n"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.css",
-              "node_modules/@ionic/angular/css/core.css",
-              "node_modules/@ionic/angular/css/ionic.bundle.css"
-            ],
-            "scripts": [],
-            "codeCoverage": true,
-            "codeCoverageExclude": [
-              "src/main.ts",
-              "src/environments/**",
-              "src/polyfills.ts"
-            ]
-          }
-        }
+  "builder": "@angular-devkit/build-angular:karma",
+  "options": {
+    "karmaConfig": "karma.conf.js",         
+    "polyfills": [
+      "zone.js",
+      "zone.js/testing"
+    ],
+    "tsConfig": "tsconfig.spec.json",
+    "assets": [
+      {
+        "glob": "**/*",
+        "input": "public"
+      }
+    ],
+    "styles": [
+      "src/styles.css",
+      "node_modules/@ionic/angular/css/core.css",
+      "node_modules/@ionic/angular/css/ionic.bundle.css"
+    ],
+    "scripts": [],
+    "codeCoverage": true,
+    "codeCoverageExclude": [
+      "src/main.ts",
+      "src/environments/**",
+      "src/polyfills.ts"
+    ]
+  }
+}
+
       }
     }
   },
