@@ -51,6 +51,10 @@ export class ProfileFormComponent implements OnInit {
     this.formGroup = this.formBuilder.formGroup(new ProfileForm()) as IFormGroup<ProfileForm>;
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   onSubmit(): void {
     if (this.formGroup.invalid) return;
     this.authManager.createCustomers({
