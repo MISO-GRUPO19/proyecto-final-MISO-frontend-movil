@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
             break;
           case rolesEnum.Vendedor:
             this.sessionStorage(response);
-            this.router.navigate(['/home/inventory']);
+            this.router.navigate(['/home/clients']);
             break;
           default:
             break;
