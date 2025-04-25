@@ -3,6 +3,7 @@ import { HomePageComponent } from './layout/home-page/home-page.component';
 import { BaseAuthComponent } from './layout/auth/base-auth/base-auth.component';
 import { ProfileFormComponent } from './modules/profile/profile-form/profile-form.component';
 import { LoginInComponent } from './layout/auth/login-in/login-in.component';
+import { ClientsListComponent } from './modules/clients/clients-list/clients-list.component';
 import { InventoryListComponent } from './modules/inventory/inventory-list/inventory-list.component';
 
 export const routes: Routes = [
@@ -12,12 +13,12 @@ export const routes: Routes = [
         children: [
             // { path: 'products', component: ProductsComponent },
             // { path: 'reports', component: ReportsComponent },
-            // { path: 'deliveries', loadChildren: () => import('./modules/deliveries/deliveries.routes').then((r) => r.deliveriesRoutes), data: { title: 'Entregas' } },
+            { path: 'deliveries', loadChildren: () => import('./modules/deliveries/deliveries.routes').then((r) => r.deliveriesRoutes), data: { title: 'Entregas' } },
             // { path: 'profile', component: ProfileComponent },
             { path: 'inventory', component: InventoryListComponent, data: { title: 'Inventario' } },
             // { path: 'visits', component: VisitsComponent },
             // { path: 'shopping-cart', component: ShoppingCartComponent },
-            // { path: 'clients', component: ClientsListComponent, data: { title: 'Clientes' } }
+            { path: 'clients', component: ClientsListComponent, data: { title: 'Clientes' } }
         ]
     },
     {

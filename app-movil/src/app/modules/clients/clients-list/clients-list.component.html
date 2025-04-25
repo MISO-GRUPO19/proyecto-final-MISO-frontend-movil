@@ -1,0 +1,24 @@
+<!-- Buscador -->
+<div class="p-4 bg-gray-50">
+  <input
+    type="text"
+    [(ngModel)]="search"
+    (ngModelChange)="filtrarClientes()"
+    placeholder="Buscar"
+    class="w-full py-2 px-4 rounded-xl bg-gray-100 text-gray-800 placeholder-gray-500"
+  />
+</div>
+
+<!-- Lista de clientes -->
+<div class="px-4 pb-24">
+  <div
+    *ngFor="let client of filteredClients"
+    class="bg-white border border-gray-200 rounded-xl p-4 mb-4 text-sm"
+  >
+    <div class="font-bold text-base mb-1">{{ client.firstName }} {{ client.lastName }}</div>
+    <div>País: {{ client.country }}</div>
+    <div>Dirección: {{ client.address }}</div>
+    <div>Email: {{ client.email }}</div>
+    <div>Teléfono: {{ client.phoneNumber }}</div>
+  </div>
+</div>
