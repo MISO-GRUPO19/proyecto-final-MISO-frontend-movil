@@ -12,7 +12,7 @@ export const routes: Routes = [
         children: [
             // { path: 'products', component: ProductsComponent },
             // { path: 'reports', component: ReportsComponent },
-            // { path: 'deliveries', loadChildren: () => import('./modules/deliveries/deliveries.routes').then((r) => r.deliveriesRoutes), data: { title: 'Entregas' } },
+            { path: 'deliveries', loadChildren: () => import('./modules/deliveries/deliveries.routes').then((r) => r.deliveriesRoutes), data: { title: 'Entregas' } },
             // { path: 'profile', component: ProfileComponent },
             // { path: 'inventory', component: InventoryListComponent, data: { title: 'Inventario' } },
             // { path: 'visits', component: VisitsComponent },

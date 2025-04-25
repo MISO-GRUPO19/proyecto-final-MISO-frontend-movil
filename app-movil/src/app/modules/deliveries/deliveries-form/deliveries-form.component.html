@@ -1,0 +1,75 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<!-- Contenido -->
+<div *ngIf="delivery as d" class="p-4 bg-gray-50 min-h-screen">
+  <!-- Estimado y estado -->
+  <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+    <div>
+      <div class="text-xs text-gray-500">Tiempo estimado de llegada</div>
+      <div class="text-xl font-semibold">{{ d.date_order | date: 'shortTime' }}</div>
+    </div>
+    <div
+      [ngClass]="{
+        'bg-yellow-100 text-yellow-800': d.state === orderState.ENPROCESO,
+        'bg-orange-100 text-orange-800': d.state === orderState.PENDIENTE,
+        'bg-green-100 text-green-800': d.state === orderState.ENTREGADO
+      }"
+      class="text-xs font-semibold px-3 py-1 rounded-full"
+    >
+      {{ d.state }}
+    </div>
+  </div>
+
+  <!-- Línea de tiempo -->
+  <div class="bg-white mt-4 p-4 rounded-xl shadow">
+    <div *ngFor="let t of d.status_history; let i = index" class="flex items-start relative mb-6">
+      <div class="flex flex-col items-center mr-4">
+        <div class="w-8 h-8 rounded-full border-2 border-blue-600 bg-white flex items-center justify-center text-blue-600">
+          <span class="material-icons text-sm">
+            {{ i === 0 ? 'local_shipping' : 'inventory_2' }}
+          </span>
+        </div>
+        <div *ngIf="i < d.status_history.length - 1" class="h-12 w-1 bg-blue-600 mt-1"></div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500">
+          {{ t.timestamp | date: 'shortDate' }} {{ t.timestamp | date: 'shortTime' }}
+        </div>
+        <div class="text-sm font-medium">{{ t.status }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendedor -->
+  <div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+    <div>
+      <div class="text-gray-400">Nombre vendedor</div>
+      <div>{{ d.seller_info.name }}</div>
+    </div>
+    <div>
+      <div class="text-gray-400">Número vendedor</div>
+      <div>{{ d.seller_info.telephone }}</div>
+    </div>
+  </div>
+
+  <!-- Productos -->
+  <div class="mt-6 text-sm">
+    <div class="font-semibold border-b pb-2 mb-2 grid grid-cols-2">
+      <div>Producto</div>
+      <div class="text-right">Cantidad paquetes</div>
+    </div>
+    <div *ngFor="let prod of d.products" class="grid grid-cols-2 mb-2">
+      <div>
+        <div class="font-medium">{{ prod.name }}</div>
+        <div class="text-red-600 text-xs">#{{ prod.barcode }}</div>
+      </div>
+      <div class="text-right">{{ prod.quantity }}</div>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="mt-4 text-right text-base font-semibold">
+    Total:
+    <span class="text-green-600 font-bold">${{ d.total | number:'1.0-0' }}</span>
+  </div>
+</div>
