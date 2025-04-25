@@ -1,11 +1,13 @@
 package com.getcapacitor.myapp;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import android.content.Context;
@@ -42,11 +44,27 @@ public class FeatureHU31 {
   private static final long LAUNCH_TIMEOUT = 10000L;
   private static final String BASIC_SAMPLE_PACKAGE = "com.miempresa.miapp";
   private UiDevice device;
-  private static Faker faker;
+  private static Faker faker = new Faker();
+  private static String fakeFirstName;
+  private static String fakeLastName;
+  private static final String [] countries = {"Argentina", "Colombia", "Chile", "Brasil", "Ecuador"};
+  private static String fakeAddress;
+  private static String fakePhone;
+  private static String fakeEmail;
+  private static Integer fakeInt = faker.number().numberBetween(0,4);
+  private static String choosenCountry = countries[fakeInt];
 
   @BeforeClass
   public static void setUpClass() throws ProtocolException {
-    faker = new Faker();
+
+    String accessToken = "";
+    fakeFirstName = faker.name().firstName();
+    fakeLastName = faker.name().lastName();
+    fakeAddress = faker.address().streetAddress();
+    fakePhone = faker.number().digits(8);
+    fakeEmail = faker.internet().emailAddress();
+
+    //Login
     try {
       URL loginUrl = new URL("http://10.0.2.2:8080/users/login");
       HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
@@ -79,12 +97,60 @@ public class FeatureHU31 {
       reader.close();
 
       JSONObject loginResponse = new JSONObject(response.toString());
-      String accessToken = loginResponse.getString("access_token");
+      accessToken = loginResponse.getString("access_token");
       conn.disconnect();
 
     } catch (IOException | JSONException e) {
         throw new RuntimeException(e);
     }
+    //Create Client
+
+    try {
+      URL createClientUrl = new URL("http://10.0.2.2:8080/users/customers");
+      HttpURLConnection conn = (HttpURLConnection) createClientUrl.openConnection();
+
+      conn.setRequestMethod("POST");
+
+      conn.setRequestProperty("Content-Type", "application/json");
+      conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+      conn.setDoOutput(true);
+
+      JSONObject customerBody = new JSONObject();
+
+      customerBody.put("firstName", fakeFirstName);
+      customerBody.put("lastName", fakeLastName);
+      customerBody.put("country", choosenCountry);
+      customerBody.put("address", fakeAddress);
+      customerBody.put("phoneNumber", fakePhone);
+      customerBody.put("email", fakeEmail);
+      try (OutputStream os = conn.getOutputStream()) {
+        byte[] input = customerBody.toString().getBytes(StandardCharsets.UTF_8);
+        os.write(input, 0, input.length);
+      }
+      int status = conn.getResponseCode();
+      BufferedReader reader;
+
+      if (status > 299) {
+        reader = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
+      } else {
+        reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+      }
+
+      StringBuilder response = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        response.append(line.trim());
+      }
+      reader.close();
+
+      System.out.println(response);
+      conn.disconnect();
+
+    } catch (IOException | JSONException e) {
+        throw new RuntimeException(e);
+    }
+
   }
   @Before
   public void startApp() {
@@ -118,9 +184,32 @@ public class FeatureHU31 {
   }
 
   @Test
-  public void test(){
-    System.out.println("Hey test ok");
-    Assert.assertTrue(true);
+  public void verifyCustomerCreation(){
+    device.wait(Until.findObject(By.hint("Email")), 5000).setText("vendedor@ccp.com");
+    device.wait(Until.findObject(By.hint("Contraseña")), 5000).setText("Vendedor123-");
+    SystemClock.sleep(2000);
+    device.wait(Until.findObject(By.text("Iniciar sesión")), 5000).click();
+    SystemClock.sleep(1000);
+    boolean firstNameVisible = device.wait(Until.hasObject(By.hint(fakeFirstName)), 5000);
+    /*
+    UiObject2 firstNameVisible = device.wait(Until.findObject(By.hint(fakeFirstName)), 5000);
+    boolean isFirstNameVisible = firstNameVisible != null;
+
+    boolean firstNameVisible = device.wait(Until.findObject(By.hint(fakeFirstName)), 5000);
+    boolean lastNameVisible = device.wait(Until.findObject(By.hint(fakeLastName)), 5000);
+    boolean adressVisible = device.wait(Until.findObject(By.hint(fakeAddress)), 5000);
+    boolean emailVisible = device.wait(Until.findObject(By.hint(fakeEmail)), 5000);
+    boolean phoneVisible = device.wait(Until.findObject(By.hint(fakePhone)), 5000);
+    boolean countryVisible = device.wait(Until.findObject(By.hint(choosenCountry)), 5000);
+
+    Assert.assertTrue(firstNameVisible);
+    Assert.assertTrue(lastNameVisible);
+    Assert.assertTrue(adressVisible);
+    Assert.assertTrue(emailVisible);
+    Assert.assertTrue(phoneVisible);
+    Assert.assertTrue(countryVisible);
+    */
+    Assert.assertTrue(firstNameVisible);
   }
 
 }

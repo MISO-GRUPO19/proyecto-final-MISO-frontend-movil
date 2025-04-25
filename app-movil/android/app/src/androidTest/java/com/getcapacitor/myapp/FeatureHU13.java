@@ -134,7 +134,7 @@ public class FeatureHU13 {
     SystemClock.sleep(1000);
     device.wait(Until.findObject(By.text("Registrarme")), 5000).click();
     SystemClock.sleep(1000);
-    boolean textResult = device.wait(Until.hasObject(By.text("Error de autenticación")), 5000);
+    boolean textResult = device.wait(Until.hasObject(By.text("Confirmación de contraseña no coincide")), 5000);
     Assert.assertTrue(textResult);
   }
   @Test
@@ -148,7 +148,7 @@ public class FeatureHU13 {
     SystemClock.sleep(1000);
     device.wait(Until.findObject(By.text("Registrarme")), 5000).click();
     SystemClock.sleep(1000);
-    boolean textResult = device.wait(Until.hasObject(By.text("Error de autenticación")), 5000);
+    boolean textResult = device.wait(Until.hasObject(By.text("Usuario ya existe")), 5000);
     Assert.assertTrue(textResult);
   }
 }
