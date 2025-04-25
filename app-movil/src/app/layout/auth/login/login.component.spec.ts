@@ -105,7 +105,7 @@ describe('LoginComponent', () => {
 
     component.onSubmit();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/inventory']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/clients']);
   });
 
   it('debe bloquear si es Administrador', () => {
