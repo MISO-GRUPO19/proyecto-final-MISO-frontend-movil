@@ -1,0 +1,67 @@
+<!-- Título -->
+<h1 class="text-3xl font-semibold text-center text-blue-600 mb-2">Registro</h1>
+<p class="text-center text-gray-600 text-lg sm:text-xl leading-snug sm:leading-normal mb-8">
+  Por favor ingrese su email
+</p>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+
+  <!-- Email -->
+  <div class="mb-5">
+    <div class="flex items-center border border-blue-600 rounded-2xl px-4 py-4 bg-white">
+      <span class="material-symbols-outlined text-blue-600 text-[22px] mr-3">mail</span>
+      <input type="email" formControlName="email" placeholder="Email"
+        class="w-full text-base bg-transparent outline-none placeholder-gray-400 font-medium" />
+    </div>
+  </div>
+
+  <!-- Contraseña -->
+  <div class="mb-4">
+    <div class="flex items-center border border-blue-600 rounded-2xl px-4 py-4 bg-white relative">
+      <span class="material-symbols-outlined text-blue-600 text-[22px] mr-3">lock</span>
+      <input [type]="hide ? 'password' : 'text'" formControlName="password" placeholder="Contraseña nueva"
+        class="w-full text-base bg-transparent outline-none placeholder-gray-400 font-medium" />
+      <button type="button" (click)="hide = !hide" class="absolute right-3 focus:outline-none">
+        <span class="material-symbols-outlined text-gray-500 text-[22px]">
+          {{ hide ? 'visibility_off' : 'visibility' }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Confirmar contraseña -->
+  <div class="mb-6">
+    <div class="flex items-center border border-blue-600 rounded-2xl px-4 py-4 bg-white relative">
+      <span class="material-symbols-outlined text-blue-600 text-[22px] mr-3">lock</span>
+      <input [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirme contraseña"
+        class="w-full text-base bg-transparent outline-none placeholder-gray-400 font-medium" />
+      <button type="button" (click)="hideConfirm = !hideConfirm" class="absolute right-3 focus:outline-none">
+        <span class="material-symbols-outlined text-gray-500 text-[22px]">
+          {{ hideConfirm ? 'visibility_off' : 'visibility' }}
+        </span>
+      </button>
+    </div>
+    <div *ngIf="formGroup.hasError('mismatch') && formGroup.get('confirmPassword')?.touched" class="text-red-500 text-sm mt-1">
+      Las contraseñas no coinciden
+    </div>
+  </div>
+
+  <!-- Botón -->
+ 
+  <button type="submit" class="w-full py-3 rounded-full bg-white font-semibold hover:bg-blue-50 transition"
+    style="color: #2563eb; border: 1.5px solid #2563eb;" id="register-button">
+    Registrarme
+  </button>
+
+  <!-- Error -->
+  <div *ngIf="error" class="text-red-500 text-sm text-center mt-3">
+    {{ error }}
+  </div>
+</form>
+
+<!-- Link de login -->
+<p class="text-center text-sm text-gray-600 mt-6">
+  ¿Ya eres miembro de CCP?
+  <br class="block sm:hidden" />
+  <a [routerLink]="['../login']" class="text-blue-600 font-semibold hover:underline">Iniciar sesión</a>
+</p>

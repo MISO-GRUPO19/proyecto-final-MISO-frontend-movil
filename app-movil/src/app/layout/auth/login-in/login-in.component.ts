@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-in',
@@ -8,8 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginInComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
-  ngOnInit() { }
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.goToHome();
+    }, 3000);
+  }
 
+  goToHome() {
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('user');
+    this.router.navigate(['/auth/login']);
+  }
 }

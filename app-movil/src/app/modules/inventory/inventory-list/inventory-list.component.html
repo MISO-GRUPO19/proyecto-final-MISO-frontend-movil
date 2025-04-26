@@ -1,0 +1,65 @@
+<!-- Contenido -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<div class="px-4 pb-24 bg-white">
+  <!-- Buscador -->
+  <div class="mt-4 relative">
+    <input
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch()"
+      type="text"
+      placeholder="Buscar"
+      class="w-full rounded-xl py-2 pl-10 pr-4 bg-gray-100 text-gray-800 placeholder-gray-500"
+    />
+    <span
+      class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-base">
+      search
+    </span>
+  </div>
+
+  <!-- Categorías -->
+  <div class="mt-6">
+    <h2 class="text-lg font-bold mb-2">Categorías</h2>
+  
+    <div class="flex gap-4 overflow-x-auto scrollbar-hide px-1 h-28">
+      <div
+        *ngFor="let cat of categorias"
+        class="flex flex-col items-center shrink-0 w-24 text-center cursor-pointer"
+        (click)="onSelecCategory(cat.name)"
+      >
+        <img
+          [src]="cat.img"
+          alt="{{ cat.name }}"
+          class="rounded-full w-16 h-16 object-cover border border-gray-300"
+        />
+        <span class="text-sm mt-1 leading-tight break-words max-w-full text-ellipsis">
+          {{ cat.name }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Productos -->
+  <div class="mt-6">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-lg font-bold">Principales</h2>
+      <span
+        class="text-sm text-gray-500 cursor-pointer hover:underline"
+        (click)="clearFilters()"
+      >
+        Ver todo
+      </span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div *ngFor="let p of filteredProducts" class="bg-blue-50 rounded-xl p-3 shadow-sm text-sm">
+        <div class="text-red-500 font-bold">{{ p.barcode }}</div>
+        <div class="font-semibold">{{ p.name }}</div>
+        <div class="mt-1">Disp.: {{ p.stock }}</div>
+        <div class="font-bold mt-1">${{ p.price }} c/u</div>
+      </div>
+    </div>
+  </div>
+</div>

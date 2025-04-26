@@ -26,4 +26,10 @@
     font-size: 24px;
     margin-bottom: 4px;
   }
-  
+  .active-tab {
+    @apply text-blue-600 font-bold;
+  }
+  main {
+    max-height: calc(100vh - 64px - 64px); /* Altura total menos header y footer */
+    overflow-y: auto;
+  }

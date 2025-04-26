@@ -1,0 +1,54 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<!-- Entregas -->
+<div class="p-4 bg-gray-50 pb-24">
+  <div *ngFor="let e of deliveries" class="bg-white rounded-xl p-4 shadow mb-4">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+      <div>
+        <div class="text-xs text-gray-500"># Pedido</div>
+        <div class="font-semibold">{{ e.code }}</div>
+      </div>
+      <div [ngClass]="{
+            'bg-orange-100 text-orange-800': e.state === orderState.PENDIENTE,
+            'bg-yellow-100 text-yellow-800': e.state === orderState.ENPROCESO,
+            'bg-green-100 text-green-800': e.state === orderState.ENTREGADO
+          }"
+          class="text-xs font-semibold px-3 py-1 rounded-full">
+        {{ e.state }}
+      </div>
+    </div>
+
+    <!-- Rutas -->
+    <div class="mt-4 flex justify-between items-center">
+      <!-- <div class="text-sm text-gray-600">{{ e.bodega }}</div> -->
+      <span class="material-icons text-gray-400">chevron_right</span>
+      <!-- <div class="text-sm font-medium">{{ e.tienda }}</div> -->
+    </div>
+
+    <!-- Vendedor -->
+    <div class="mt-4 grid grid-cols-2 text-sm">
+      <div>
+        <div class="text-gray-400">Vendedor</div>
+        <div>{{ e.seller_info.name }}</div>
+      </div>
+      <div>
+        <div class="text-gray-400">Número de vendedor</div>
+        <div>{{ e.seller_info.telephone }}</div>
+      </div>
+    </div>
+
+    <!-- Total y botón -->
+    <div class="mt-4 flex justify-between items-center">
+      <div class="font-semibold text-sm">Total</div>
+      <div class="text-lg font-bold">${{ e.total }}</div>
+    </div>
+
+    <a
+    [routerLink]="['/home/deliveries/details', e.id]"
+    class="mt-4 w-full bg-blue-600 text-white rounded-lg py-2 font-medium text-sm hover:bg-blue-700 transition text-center block"
+  >
+    VER DETALLES
+  </a>
+  
+  </div>
+</div>
