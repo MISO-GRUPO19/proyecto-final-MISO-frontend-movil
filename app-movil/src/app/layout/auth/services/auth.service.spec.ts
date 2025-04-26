@@ -7,10 +7,16 @@ describe('AuthManager', () => {
     let service: AuthManager;
     let httpMock: HttpTestingController;
 
+    // ✅ Respetando el modelo LoginResponse y UserResponse
     const dummyResponse = {
         access_token: 'abc123',
         refresh_token: 'xyz456',
-        user: { name: 'John' }
+        isCustomer: true,
+        user: {
+            id: '1',
+            email: 'john@example.com',
+            role: 1
+        }
     };
 
     beforeEach(() => {
@@ -51,7 +57,11 @@ describe('AuthManager', () => {
     it('should logout and remove tokens', () => {
         sessionStorage.setItem('access_token', 'abc');
         sessionStorage.setItem('refresh_token', 'xyz');
-        sessionStorage.setItem('user', '{"name":"John"}');
+        sessionStorage.setItem('user', JSON.stringify({
+            id: '1',
+            email: 'john@example.com',
+            role: 1
+        }));
 
         service.logout();
 
@@ -75,5 +85,4 @@ describe('AuthManager', () => {
         sessionStorage.removeItem('access_token');
         expect(service.isLoggedIn()).toBeFalse();
     });
-
 });
