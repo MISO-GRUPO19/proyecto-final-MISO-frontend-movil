@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center">
       <div>
         <div class="text-xs text-gray-500"># Pedido</div>
-        <div class="font-semibold">{{ e.id }}</div>
+        <div class="font-semibold">{{ e.code }}</div>
       </div>
       <div [ngClass]="{
             'bg-orange-100 text-orange-800': e.state === orderState.PENDIENTE,
