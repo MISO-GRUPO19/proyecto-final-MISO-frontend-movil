@@ -15,7 +15,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import com.github.javafaker.Faker;
 import androidx.test.core.app.ApplicationProvider;
-
+import org.json.JSONArray;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -39,7 +39,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
+
 @RunWith(AndroidJUnit4.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FeatureHU31 {
   private static final long LAUNCH_TIMEOUT = 10000L;
   private static final String BASIC_SAMPLE_PACKAGE = "com.miempresa.miapp";
@@ -53,11 +55,11 @@ public class FeatureHU31 {
   private static String fakeEmail;
   private static Integer fakeInt = faker.number().numberBetween(0,4);
   private static String choosenCountry = countries[fakeInt];
+  private static String accessToken = "";
 
   @BeforeClass
   public static void setUpClass() throws ProtocolException {
 
-    String accessToken = "";
     fakeFirstName = faker.name().firstName();
     fakeLastName = faker.name().lastName();
     fakeAddress = faker.address().streetAddress();
@@ -103,8 +105,76 @@ public class FeatureHU31 {
     } catch (IOException | JSONException e) {
         throw new RuntimeException(e);
     }
-    //Create Client
 
+  }
+  @Before
+  public void startApp() {
+    // Initialize UiDevice instance
+    device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+    // Press home button
+    device.pressHome();
+
+    // Wait for launcher
+    String launcherPackage = device.getLauncherPackageName();
+    assertThat(launcherPackage, notNullValue());
+    device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
+
+    // Launch the app
+    Context context = ApplicationProvider.getApplicationContext();
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
+    if (intent != null) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      context.startActivity(intent);
+    }
+
+    device.wait(Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)), LAUNCH_TIMEOUT);
+  }
+
+  @Test
+  public void test1_verifyEmptyCustomers(){
+    device.wait(Until.findObject(By.hint("Email")), 5000).setText("vendedor@ccp.com");
+    device.wait(Until.findObject(By.hint("Contraseña")), 5000).setText("Vendedor123-");
+    SystemClock.sleep(2000);
+    device.wait(Until.findObject(By.text("Iniciar sesión")), 5000).click();
+    SystemClock.sleep(1000);
+    try {
+      URL createClientUrl = new URL("http://10.0.2.2:8080/customers");
+      HttpURLConnection conn = (HttpURLConnection) createClientUrl.openConnection();
+
+      conn.setRequestMethod("GET");
+
+      conn.setRequestProperty("Content-Type", "application/json");
+      conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+      int responseCode = conn.getResponseCode();
+      if (responseCode == HttpURLConnection.HTTP_OK) {
+        BufferedReader in = new BufferedReader(
+          new InputStreamReader(conn.getInputStream())
+        );
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+          response.append(inputLine);
+        }
+        in.close();
+        System.out.println("Response: " + response.toString());
+        JSONArray customers = new JSONArray(response.toString());
+        Assert.assertEquals(0, customers.length());
+
+      } else {
+        System.out.println("GET request failed. Response Code: " + responseCode);
+      }
+
+      conn.disconnect();
+
+    } catch (IOException | JSONException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  @Test
+  public void test2_createClient(){
     try {
       URL createClientUrl = new URL("http://10.0.2.2:8080/users/customers");
       HttpURLConnection conn = (HttpURLConnection) createClientUrl.openConnection();
@@ -146,70 +216,71 @@ public class FeatureHU31 {
 
       System.out.println(response);
       conn.disconnect();
+      Assert.assertEquals(201, status);
 
     } catch (IOException | JSONException e) {
-        throw new RuntimeException(e);
+      throw new RuntimeException(e);
     }
 
-  }
-  @Before
-  public void startApp() {
-    // Initialize UiDevice instance
-    device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-
-    // Press home button
-    device.pressHome();
-
-    // Wait for launcher
-    String launcherPackage = device.getLauncherPackageName();
-    assertThat(launcherPackage, notNullValue());
-    device.wait(
-      Until.hasObject(By.pkg(launcherPackage).depth(0)),
-      LAUNCH_TIMEOUT
-    );
-
-    // Launch the app
-    Context context = ApplicationProvider.getApplicationContext();
-    Intent intent = context.getPackageManager().getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
-    if (intent != null) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      context.startActivity(intent);
-    }
-
-    // Wait for the app to appear
-    device.wait(
-      Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
-      LAUNCH_TIMEOUT
-    );
   }
 
   @Test
-  public void verifyCustomerCreation(){
+  public void test3_verifyCustomerCreation(){
     device.wait(Until.findObject(By.hint("Email")), 5000).setText("vendedor@ccp.com");
     device.wait(Until.findObject(By.hint("Contraseña")), 5000).setText("Vendedor123-");
     SystemClock.sleep(2000);
     device.wait(Until.findObject(By.text("Iniciar sesión")), 5000).click();
     SystemClock.sleep(1000);
-    boolean firstNameVisible = device.wait(Until.hasObject(By.hint(fakeFirstName)), 5000);
-    /*
-    UiObject2 firstNameVisible = device.wait(Until.findObject(By.hint(fakeFirstName)), 5000);
-    boolean isFirstNameVisible = firstNameVisible != null;
+    try {
+      URL createClientUrl = new URL("http://10.0.2.2:8080/customers");
+      HttpURLConnection conn = (HttpURLConnection) createClientUrl.openConnection();
 
-    boolean firstNameVisible = device.wait(Until.findObject(By.hint(fakeFirstName)), 5000);
-    boolean lastNameVisible = device.wait(Until.findObject(By.hint(fakeLastName)), 5000);
-    boolean adressVisible = device.wait(Until.findObject(By.hint(fakeAddress)), 5000);
-    boolean emailVisible = device.wait(Until.findObject(By.hint(fakeEmail)), 5000);
-    boolean phoneVisible = device.wait(Until.findObject(By.hint(fakePhone)), 5000);
-    boolean countryVisible = device.wait(Until.findObject(By.hint(choosenCountry)), 5000);
+      conn.setRequestMethod("GET");
 
-    Assert.assertTrue(firstNameVisible);
-    Assert.assertTrue(lastNameVisible);
-    Assert.assertTrue(adressVisible);
-    Assert.assertTrue(emailVisible);
-    Assert.assertTrue(phoneVisible);
-    Assert.assertTrue(countryVisible);
-    */
-    Assert.assertTrue(firstNameVisible);
+      conn.setRequestProperty("Content-Type", "application/json");
+      conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+      int responseCode = conn.getResponseCode();
+      if (responseCode == HttpURLConnection.HTTP_OK) {
+        BufferedReader in = new BufferedReader(
+          new InputStreamReader(conn.getInputStream())
+        );
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+          response.append(inputLine);
+        }
+        in.close();
+        System.out.println("Response: " + response.toString());
+        JSONArray customers = new JSONArray(response.toString());
+        JSONObject firstCustomer = customers.getJSONObject(0);
+
+        String firstName = firstCustomer.getString("firstName");
+        String lastName = firstCustomer.getString("lastName");
+        String email = firstCustomer.getString("email");
+        String phone = firstCustomer.getString("phoneNumber");
+        String country = firstCustomer.getString("country");
+        String address = firstCustomer.getString("address");
+
+        Assert.assertEquals(firstName, fakeFirstName);
+        Assert.assertEquals(lastName, fakeLastName);
+        Assert.assertEquals(email, fakeEmail);
+        Assert.assertEquals(phone, fakePhone);
+        Assert.assertEquals(country, choosenCountry);
+        Assert.assertEquals(address, fakeAddress);
+
+      } else {
+        System.out.println("GET request failed. Response Code: " + responseCode);
+      }
+
+      conn.disconnect();
+
+    } catch (IOException | JSONException e) {
+      throw new RuntimeException(e);
+    }
+
+
   }
 
 }
