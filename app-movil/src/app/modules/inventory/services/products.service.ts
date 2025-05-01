@@ -12,7 +12,7 @@ export class ProductsManager {
     private apiUrl = environment.apiUrl; // API
     private http = inject(HttpClient);
     private headers = {
-        Authorization: `Bearer ${sessionStorage.getItem('access_token')}`
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
     };
 
     constructor() { }

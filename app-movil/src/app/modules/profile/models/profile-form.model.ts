@@ -4,18 +4,18 @@ import { compare, email, maxLength, prop, required } from '@rxweb/reactive-form-
 
 export class ProfileForm {
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public name: string = '';
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public lastName: string = '';
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public telphone: number = 0;
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public address: string = '';
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public country: string = '';
 }

@@ -19,7 +19,6 @@ export class DeliveriesFormComponent implements OnInit {
   constructor(private route: ActivatedRoute, private ordersManager: OrdersManager) { }
 
   ngOnInit(): void {
-    debugger;
     this.deliveryId = this.route.snapshot.paramMap.get('id') || '';
     this.fetchDeliveries();
   }

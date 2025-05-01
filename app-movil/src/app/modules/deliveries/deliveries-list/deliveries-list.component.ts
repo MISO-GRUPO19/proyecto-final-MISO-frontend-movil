@@ -21,7 +21,7 @@ export class DeliveriesListComponent implements OnInit {
 
 
   ngOnInit() {
-    const userData = sessionStorage.getItem('user');
+    const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       this.clientId = user.id;

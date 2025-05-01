@@ -49,7 +49,7 @@ describe('HomePageComponent', () => {
     });
 
     it('debe establecer el roleId desde sessionStorage si está disponible', () => {
-        sessionStorage.setItem('user', JSON.stringify({ role: 1 }));
+        localStorage.setItem('user', JSON.stringify({ role: 1 }));
         component.ngOnInit();
         expect(component.roleId).toBe(1);
     });
