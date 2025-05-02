@@ -4,6 +4,7 @@ import { ProductsShoppingCar } from '../../inventory/models/inventory.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { rolesEnum } from '../../../layout/roles.enum';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -19,7 +20,7 @@ export class ShoppingCartComponent implements OnInit {
   storeName: string | null = null;
   clientId?: string;
   roles = rolesEnum;
-  constructor(private ordersManager: OrdersManager) { }
+  constructor(private ordersManager: OrdersManager, private router: Router) { }
 
   ngOnInit() {
     this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
@@ -87,11 +88,14 @@ export class ShoppingCartComponent implements OnInit {
         localStorage.removeItem('cartItems');
         localStorage.removeItem('selectedClient');
         localStorage.removeItem('selectedStore');
-        this.cartItems = [];
-        this.clientName = null;
-        this.storeName = null;
-        alert('Orden creada con éxito');
-        window.location.reload();
+        this.router.navigate(['/loading'], {
+          queryParams: {
+            title: this.roleId == rolesEnum.Cliente ? 'Pedido realizado con éxito' : 'Pedido realizado con exito',
+            message: this.roleId == rolesEnum.Cliente ? 'Tu pedido fue creado con exito' : 'El pedido para el cliente ' + this.clientName + ' fue creado con éxito para su tienda ' + this.storeName,
+            redirectTo: '/home/shopping-cart',
+            clearSession: false
+          }
+        });
       },
       error: (err) => {
         console.error(err);

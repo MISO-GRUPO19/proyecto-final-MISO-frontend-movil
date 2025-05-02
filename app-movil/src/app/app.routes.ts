@@ -7,6 +7,7 @@ import { ClientsListComponent } from './modules/clients/clients-list/clients-lis
 import { InventoryListComponent } from './modules/inventory/inventory-list/inventory-list.component';
 import { ProductsListComponent } from './modules/products/products-list/products-list.component';
 import { ShoppingCartComponent } from './modules/shopping-cart/shopping-cart/shopping-cart.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 export const routes: Routes = [
     {
@@ -20,8 +21,13 @@ export const routes: Routes = [
             { path: 'inventory', component: InventoryListComponent, data: { title: 'Inventario' } },
             // { path: 'visits', component: VisitsComponent },
             { path: 'shopping-cart', component: ShoppingCartComponent, data: { title: 'Carrito de Compras' } },
-            { path: 'clients', component: ClientsListComponent, data: { title: 'Clientes' } }
+            { path: 'clients', component: ClientsListComponent, data: { title: 'Clientes' } },
+            { path: '', redirectTo: 'products', pathMatch: 'full' },
         ]
+    },
+    {
+        path: 'loading',
+        component: LoadingComponent,
     },
     {
         path: 'profile',
