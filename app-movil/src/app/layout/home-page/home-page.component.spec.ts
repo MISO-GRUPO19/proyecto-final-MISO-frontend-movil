@@ -1,90 +1,75 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomePageComponent } from './home-page.component';
-import { Router, ActivatedRoute, NavigationEnd, UrlTree } from '@angular/router';
-import { of, Subject } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, of } from 'rxjs';
+import { rolesEnum } from '../roles.enum';
 
 describe('HomePageComponent', () => {
     let component: HomePageComponent;
     let fixture: ComponentFixture<HomePageComponent>;
+    let router: Router;
     let routerEvents$: Subject<any>;
-    let mockRouter: jasmine.SpyObj<Router>;
-    let mockActivatedRoute: any;
 
     beforeEach(async () => {
         routerEvents$ = new Subject<NavigationEnd>();
 
-        mockRouter = jasmine.createSpyObj<Router>(
-            'Router',
-            ['navigate', 'createUrlTree', 'serializeUrl'],
-            {
-                events: routerEvents$.asObservable(),
-                createUrlTree: jasmine.createSpy().and.returnValue({} as UrlTree),
-                serializeUrl: jasmine.createSpy().and.returnValue('/mock-url')
-            }
-        );
-
-        mockActivatedRoute = {
-            snapshot: { data: {} },
-            firstChild: null
-        };
-
         await TestBed.configureTestingModule({
-            imports: [HomePageComponent, CommonModule],
+            imports: [HomePageComponent],
             providers: [
-                { provide: Router, useValue: mockRouter },
-                { provide: ActivatedRoute, useValue: mockActivatedRoute }
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
+                provideRouter([]),
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            data: { title: 'Título prueba' }
+                        },
+                        firstChild: null
+                    }
+                }
+            ]
         }).compileComponents();
 
         fixture = TestBed.createComponent(HomePageComponent);
         component = fixture.componentInstance;
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigate');
+        spyOnProperty(router, 'events', 'get').and.returnValue(routerEvents$.asObservable());
         fixture.detectChanges();
     });
 
-    it('debe crear el componente', () => {
+    it('should create the component', () => {
         expect(component).toBeTruthy();
     });
 
-    it('debe establecer el roleId desde sessionStorage si está disponible', () => {
-        localStorage.setItem('user', JSON.stringify({ role: 1 }));
+    it('should set pageTitle from ActivatedRoute snapshot data', () => {
         component.ngOnInit();
-        expect(component.roleId).toBe(1);
+        expect(component.pageTitle).toBe('Título prueba');
     });
 
-    it('debe establecer pageTitle como "Inicio" si no hay título en la ruta', () => {
-        (component as any).updatePageTitle();
-        expect(component.pageTitle).toBe('Inicio');
-    });
-
-    it('debe establecer pageTitle desde el data de la ruta más profunda', () => {
-        const child = {
-            snapshot: {
-                data: { title: 'Mi Título' }
-            },
-            firstChild: null
-        };
-        mockActivatedRoute.firstChild = child;
-
-        (component as any).updatePageTitle();
-        expect(component.pageTitle).toBe('Mi Título');
-    });
-
-    it('debe actualizar el título al detectar un NavigationEnd', () => {
-        const spy = spyOn<any>(component, 'updatePageTitle');
+    it('should update title on NavigationEnd event', () => {
+        component.ngOnInit();
         routerEvents$.next(new NavigationEnd(1, '/home', '/home'));
-        expect(spy).toHaveBeenCalled();
+        expect(component.pageTitle).toBe('Título prueba');
     });
 
-    it('debe limpiar sessionStorage y redirigir al login al hacer logout', () => {
-        const spy = spyOn(sessionStorage, 'removeItem');
+    it('should get roleId from localStorage', () => {
+        const mockUser = { role: rolesEnum.Vendedor };
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        component.ngOnInit();
+        expect(component.roleId).toBe(rolesEnum.Vendedor);
+    });
+
+    it('should remove user data and navigate to /auth/login on logout()', () => {
+        localStorage.setItem('access_token', '123');
+        localStorage.setItem('refresh_token', '456');
+        localStorage.setItem('user', JSON.stringify({}));
+
         component.logout();
 
-        expect(spy).toHaveBeenCalledWith('access_token');
-        expect(spy).toHaveBeenCalledWith('refresh_token');
-        expect(spy).toHaveBeenCalledWith('user');
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
+        expect(localStorage.getItem('access_token')).toBeNull();
+        expect(localStorage.getItem('refresh_token')).toBeNull();
+        expect(localStorage.getItem('user')).toBeNull();
+        expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 });

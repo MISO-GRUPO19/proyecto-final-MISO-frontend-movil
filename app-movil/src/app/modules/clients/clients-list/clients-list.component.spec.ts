@@ -22,7 +22,8 @@ describe('ClientsListComponent', () => {
             stores: [
                 { store_name: 'Tienda Norte', store_address: 'Calle 1' },
                 { store_name: 'Tienda Sur', store_address: 'Carrera 2' }
-            ]
+            ],
+            id: '1'
         },
         {
             firstName: 'Luis',
@@ -31,7 +32,8 @@ describe('ClientsListComponent', () => {
             country: 'México',
             address: 'Avenida 45',
             phoneNumber: '5559876543',
-            stores: []
+            stores: [],
+            id: '2'
         }
     ];
 

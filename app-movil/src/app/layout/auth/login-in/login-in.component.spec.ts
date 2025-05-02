@@ -1,49 +1,49 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { LoginInComponent } from './login-in.component';
 import { Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { provideRouter } from '@angular/router';
 
 describe('LoginInComponent', () => {
     let component: LoginInComponent;
     let fixture: ComponentFixture<LoginInComponent>;
-    let mockRouter: jasmine.SpyObj<Router>;
+    let router: Router;
 
     beforeEach(async () => {
-        mockRouter = jasmine.createSpyObj<Router>('Router', ['navigate']);
-
         await TestBed.configureTestingModule({
-            imports: [LoginInComponent, CommonModule],
+            imports: [LoginInComponent],
             providers: [
-                { provide: Router, useValue: mockRouter }
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
+                provideRouter([])
+            ]
         }).compileComponents();
 
         fixture = TestBed.createComponent(LoginInComponent);
         component = fixture.componentInstance;
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigate');
         fixture.detectChanges();
     });
 
-    it('debe crear el componente', () => {
+    it('should create the component', () => {
         expect(component).toBeTruthy();
     });
 
-    it('debe ejecutar goToHome después de 3 segundos', fakeAsync(() => {
-        spyOn(component, 'goToHome');
-        component.ngOnInit();
+    it('should remove tokens and navigate to login on goToHome', () => {
+        localStorage.setItem('access_token', 'token');
+        localStorage.setItem('refresh_token', 'refresh');
+        localStorage.setItem('user', JSON.stringify({ name: 'test' }));
 
-        tick(3000); // Simula los 3 segundos
-        expect(component.goToHome).toHaveBeenCalled();
-    }));
-
-    it('debe limpiar sessionStorage y redirigir a /auth/login', () => {
-        const removeSpy = spyOn(sessionStorage, 'removeItem');
         component.goToHome();
 
-        expect(removeSpy).toHaveBeenCalledWith('access_token');
-        expect(removeSpy).toHaveBeenCalledWith('refresh_token');
-        expect(removeSpy).toHaveBeenCalledWith('user');
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/login']);
+        expect(localStorage.getItem('access_token')).toBeNull();
+        expect(localStorage.getItem('refresh_token')).toBeNull();
+        expect(localStorage.getItem('user')).toBeNull();
+        expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
+
+    it('should call goToHome after 3 seconds', fakeAsync(() => {
+        spyOn(component, 'goToHome');
+        component.ngOnInit();
+        tick(3000);
+        expect(component.goToHome).toHaveBeenCalled();
+    }));
 });

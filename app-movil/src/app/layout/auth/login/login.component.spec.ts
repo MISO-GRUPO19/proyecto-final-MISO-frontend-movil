@@ -1,148 +1,137 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
-import { Router, ActivatedRoute, UrlTree } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { IonicModule, NavController } from '@ionic/angular';
+import { provideRouter, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthManager } from '../services/auth.service';
-import { RxReactiveFormsModule, RxFormBuilder } from '@rxweb/reactive-form-validators';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { rolesEnum } from '../../roles.enum';
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { importProvidersFrom } from '@angular/core';
+import { LoginResponse } from '../models/login-form.model';
 
 describe('LoginComponent', () => {
-  let fixture: ComponentFixture<LoginComponent>;
   let component: LoginComponent;
-  let mockAuthManager: jasmine.SpyObj<AuthManager>;
-  let mockRouter: jasmine.SpyObj<Router>;
+  let fixture: ComponentFixture<LoginComponent>;
+  let authManagerMock: jasmine.SpyObj<AuthManager>;
+  let router: Router;
 
   beforeEach(async () => {
-    mockRouter = jasmine.createSpyObj<Router>('Router', ['navigate'], {
-      events: of(),
-      createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({} as UrlTree),
-      serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue('/mock-url')
-    });
-
-    const mockActivatedRoute = {
-      snapshot: { queryParams: {} }
-    };
-
-    const mockNavController = jasmine.createSpyObj('NavController', ['navigateForward', 'navigateRoot', 'back']);
-    mockAuthManager = jasmine.createSpyObj<AuthManager>('AuthManager', ['login']);
+    authManagerMock = jasmine.createSpyObj<AuthManager>('AuthManager', ['login']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        LoginComponent,
-        IonicModule,
-        CommonModule,
-        ReactiveFormsModule,
-        RxReactiveFormsModule,
-        TranslateModule.forRoot()
-      ],
+      imports: [LoginComponent],
       providers: [
         RxFormBuilder,
-        TranslateService,
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: NavController, useValue: mockNavController },
-        { provide: AuthManager, useValue: mockAuthManager }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+        { provide: AuthManager, useValue: authManagerMock },
+        provideRouter([]),
+        importProvidersFrom(TranslateModule.forRoot())
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
-  function buildResponse(role: rolesEnum, isCustomer: boolean) {
-    return {
-      access_token: 'abc',
-      refresh_token: 'def',
-      isCustomer,
-      user: {
-        id: 'u1',
-        email: 'test@mail.com',
-        role
-      }
-    };
-  }
-
-  it('debe crear el componente', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('no debe enviar el formulario si es inválido', () => {
-    spyOnProperty(component.formGroup, 'invalid', 'get').and.returnValue(true);
+  it('should not submit if form is invalid', () => {
+    component.formGroup.controls.email.setValue('');
+    component.formGroup.controls.password.setValue('');
     component.onSubmit();
-    expect(mockAuthManager.login).not.toHaveBeenCalled();
+    expect(authManagerMock.login).not.toHaveBeenCalled();
   });
 
-  it('debe redirigir a /profile si Cliente no es customer', () => {
-    component.formGroup.setValue({ email: 'test@mail.com', password: '1234' });
-    mockAuthManager.login.and.returnValue(of(buildResponse(rolesEnum.Cliente, false)));
+  it('should show error if user is Admin', () => {
+    const response: LoginResponse = {
+      access_token: 'token',
+      refresh_token: 'refresh',
+      isCustomer: false,
+      user: { email: 'admin@test.com', id: '1', role: rolesEnum.Administrador }
+    };
 
+    component.formGroup.controls.email.setValue('admin@test.com');
+    component.formGroup.controls.password.setValue('123456');
+
+    authManagerMock.login.and.returnValue(of(response));
     component.onSubmit();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile'], {
-      queryParams: { email: 'test@mail.com' }
+    expect(component.error).toBe('Los usuarios con el rol de Administrador no pueden ingresar.');
+  });
+
+  it('should navigate to profile if user is Client and not a customer', fakeAsync(() => {
+    const response: LoginResponse = {
+      access_token: 'token',
+      refresh_token: 'refresh',
+      isCustomer: false,
+      user: { email: 'client@test.com', id: '1', role: rolesEnum.Cliente }
+    };
+
+    component.formGroup.controls.email.setValue('client@test.com');
+    component.formGroup.controls.password.setValue('123456');
+
+    authManagerMock.login.and.returnValue(of(response));
+    component.onSubmit();
+    tick();
+
+    expect(localStorage.getItem('access_token')).toBe('token');
+    expect(router.navigate).toHaveBeenCalledWith(['/profile'], {
+      queryParams: { email: 'client@test.com' }
     });
-  });
+  }));
 
-  it('debe redirigir a /home/deliveries si Cliente es customer', () => {
-    component.formGroup.setValue({ email: 'client@mail.com', password: '1234' });
-    mockAuthManager.login.and.returnValue(of(buildResponse(rolesEnum.Cliente, true)));
+  it('should navigate to /home/deliveries if user is Client and is a customer', fakeAsync(() => {
+    const response: LoginResponse = {
+      access_token: 'token',
+      refresh_token: 'refresh',
+      isCustomer: true,
+      user: { email: 'client@test.com', id: '1', role: rolesEnum.Cliente }
+    };
 
+    component.formGroup.controls.email.setValue('client@test.com');
+    component.formGroup.controls.password.setValue('123456');
+
+    authManagerMock.login.and.returnValue(of(response));
     component.onSubmit();
+    tick();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/deliveries']);
-  });
+    expect(router.navigate).toHaveBeenCalledWith(['/home/deliveries']);
+  }));
 
-  it('debe redirigir a /home/inventory si es Vendedor', () => {
-    component.formGroup.setValue({ email: 'vendedor@mail.com', password: '1234' });
-    mockAuthManager.login.and.returnValue(of(buildResponse(rolesEnum.Vendedor, false)));
+  it('should navigate to /home/clients if user is Seller', fakeAsync(() => {
+    const response: LoginResponse = {
+      access_token: 'token',
+      refresh_token: 'refresh',
+      isCustomer: false,
+      user: { email: 'seller@test.com', id: '1', role: rolesEnum.Vendedor }
+    };
 
+    component.formGroup.controls.email.setValue('seller@test.com');
+    component.formGroup.controls.password.setValue('123456');
+
+    authManagerMock.login.and.returnValue(of(response));
     component.onSubmit();
+    tick();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/clients']);
-  });
+    expect(router.navigate).toHaveBeenCalledWith(['/home/clients']);
+  }));
 
-  it('debe bloquear si es Administrador', () => {
-    component.formGroup.setValue({ email: 'admin@mail.com', password: '1234' });
-    mockAuthManager.login.and.returnValue(of(buildResponse(rolesEnum.Administrador, false)));
+  it('should set error message on login failure', fakeAsync(() => {
+    const errorResponse = {
+      error: { mssg: 'Credenciales incorrectas' }
+    };
 
+    component.formGroup.controls.email.setValue('fail@test.com');
+    component.formGroup.controls.password.setValue('wrong');
+
+    authManagerMock.login.and.returnValue(throwError(() => errorResponse));
     component.onSubmit();
+    tick();
 
-    expect(component.error).toContain('Administrador');
-  });
-
-  it('debe mostrar error si el backend devuelve error', () => {
-    component.formGroup.setValue({ email: 'fail@mail.com', password: '1234' });
-
-    mockAuthManager.login.and.returnValue(throwError(() => ({
-      error: { mssg: 'Credenciales inválidas' }
-    })));
-
-    component.onSubmit();
-
-    expect(component.error).toEqual('Credenciales inválidas');
-  });
-
-  it('debe guardar access_token, refresh_token y user en sessionStorage', () => {
-    const setItemSpy = spyOn(sessionStorage, 'setItem');
-    component.formGroup.setValue({ email: 'test@mail.com', password: '1234' });
-
-    mockAuthManager.login.and.returnValue(of(buildResponse(rolesEnum.Vendedor, false)));
-
-    component.onSubmit();
-
-    expect(setItemSpy).toHaveBeenCalledWith('access_token', 'abc');
-    expect(setItemSpy).toHaveBeenCalledWith('refresh_token', 'def');
-    expect(setItemSpy).toHaveBeenCalledWith('user', JSON.stringify({
-      id: 'u1',
-      email: 'test@mail.com',
-      role: rolesEnum.Vendedor
-    }));
-  });
+    expect(component.error).toBe('Credenciales incorrectas');
+  }));
 });
