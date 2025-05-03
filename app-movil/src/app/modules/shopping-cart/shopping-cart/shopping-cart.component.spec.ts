@@ -46,9 +46,67 @@ describe('ShoppingCartComponent', () => {
           return null;
       }
     });
+
     spyOn(localStorage, 'setItem');
     spyOn(localStorage, 'removeItem');
     fixture.detectChanges();
+  });
+
+  it('debería inicializar cartItems desde localStorage', () => {
+    expect(component.cartItems.length).toBe(2);
+    expect(component.roleId).toBe(rolesEnum.Vendedor);
+    expect(component.clientName).toBe('Cliente X');
+    expect(component.storeName).toBe('Tienda Y');
+  });
+
+  it('debería calcular el total correctamente', () => {
+    expect(component.total).toBe(250);
+  });
+
+  it('debería aumentar la cantidad de un ítem', () => {
+    const item = component.cartItems[0];
+    component.increaseQuantity(item);
+    expect(item.quantity).toBe(3);
+  });
+
+  it('debería disminuir la cantidad de un ítem mayor a 1', () => {
+    const item = component.cartItems[0];
+    component.decreaseQuantity(item);
+    expect(item.quantity).toBe(1);
+  });
+
+  it('debería eliminar el ítem si la cantidad es 1 y se disminuye', () => {
+    const item = component.cartItems[1];
+    component.decreaseQuantity(item);
+    expect(component.cartItems.find(i => i.barcode === item.barcode)).toBeUndefined();
+  });
+
+  it('debería eliminar un ítem del carrito', () => {
+    component.removeItem(mockCartItems[0]);
+    expect(component.cartItems.length).toBe(1);
+  });
+
+  it('debería actualizar el almacenamiento al modificar el carrito', () => {
+    component.updateCartStorage();
+    expect(localStorage.setItem).toHaveBeenCalledWith('cartItems', jasmine.any(String));
+  });
+
+  it('debería alertar si no hay cliente seleccionado', () => {
+    spyOn(window, 'alert');
+    (localStorage.getItem as jasmine.Spy).withArgs('selectedClient').and.returnValue(null);
+
+    component.submitOrder();
+
+    expect(window.alert).toHaveBeenCalledWith('Por favor seleccione un cliente');
+  });
+
+  it('debería manejar error si createOrder falla', () => {
+    const consoleSpy = spyOn(console, 'error');
+    mockOrdersManager.createOrder.and.returnValue(throwError(() => new Error('Error al crear pedido')));
+
+    component.submitOrder();
+
+    expect(consoleSpy).toHaveBeenCalledWith(jasmine.any(Error));
   });
 
   it('debería enviar pedido y redirigir con mensaje de vendedor', () => {

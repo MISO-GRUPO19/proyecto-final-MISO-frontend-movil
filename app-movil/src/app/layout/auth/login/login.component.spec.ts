@@ -134,4 +134,5 @@ describe('LoginComponent', () => {
 
     expect(component.error).toBe('Credenciales incorrectas');
   }));
+
 });
