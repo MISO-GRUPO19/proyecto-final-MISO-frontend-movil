@@ -3,11 +3,11 @@ import { email, required } from '@rxweb/reactive-form-validators';
 
 export class LoginRequest {
 
-    @email({ message: 'Validations.MustBeEmail' })
-    @required({ message: 'Validations.IsRequired' })
+    @email({ message: 'Debe ser un correo electrónico' })
+    @required({ message: 'Este campo es requerido' })
     public email: string = '';
 
-    @required({ message: 'Validations.IsRequired' })
+    @required({ message: 'Este campo es requerido' })
     public password: string = '';
 }
 
@@ -21,4 +21,5 @@ export class UserResponse {
     public email: string = '';
     public id: string = '';
     public role: number = 0;
+
 }

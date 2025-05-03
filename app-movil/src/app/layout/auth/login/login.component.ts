@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.formGroup.invalid) return;
 
+
     this.authManager.login(this.formGroup.value).subscribe({
       next: (response: LoginResponse) => {
         switch (response.user.role) {
@@ -75,9 +76,9 @@ export class LoginComponent implements OnInit {
   }
 
   sessionStorage(response: LoginResponse) {
-    sessionStorage.setItem('access_token', response.access_token);
-    sessionStorage.setItem('refresh_token', response.refresh_token);
-    sessionStorage.setItem('user', JSON.stringify(response.user));
+    localStorage.setItem('access_token', response.access_token);
+    localStorage.setItem('refresh_token', response.refresh_token);
+    localStorage.setItem('user', JSON.stringify(response.user));
   }
 
 }

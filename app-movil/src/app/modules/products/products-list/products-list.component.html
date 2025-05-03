@@ -1,0 +1,84 @@
+<!-- Contenido -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<div class="px-4 pb-24 bg-white">
+
+
+  <div class="flex flex-col items-center justify-center gap-2 pt-8 pb-6 border-b border-gray-200">
+    <div class="flex items-center gap-2" *ngIf="selectedStoreName">
+      <span class="material-icons text-green-600 text-3xl">location_on</span>
+      <span class="text-xl font-bold">Tienda</span>
+      <span class="text-xl">{{ selectedStoreName }}</span>
+    </div>
+
+    <div class="flex items-center gap-2" *ngIf="roleId === roles.Vendedor">
+      <span class="material-icons text-blue-600 text-2xl">person</span>
+      <span class="text-base font-bold">Cliente</span>
+ 
+      <div class="relative">
+        <button (click)="toggleClientDropdown()" class="text-base focus:outline-none">
+          {{ selectedClientName || 'Seleccione' }}
+          <span class="material-icons text-gray-500 text-sm align-middle ml-1">
+            expand_more
+          </span>
+        </button>
+     
+        <ul *ngIf="clientDropdownOpen"
+          class="absolute z-10 mt-1 w-40 bg-white border border-gray-200 rounded shadow-md">
+          <li *ngFor="let client of clients" (click)="selectClient(client)"
+            class="px-3 py-1 hover:bg-gray-100 cursor-pointer text-sm">
+            {{ client.firstName }} {{ client.lastName }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="mt-2 relative">
+    <input [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" type="text" placeholder="Buscar"
+      class="w-full rounded-xl py-2 pl-10 pr-4 bg-gray-100 text-gray-800 placeholder-gray-500" />
+    <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-base">
+      search
+    </span>
+  </div>
+
+  <div class="mt-6">
+    <h2 class="text-lg font-bold mb-2">Categorías</h2>
+
+    <div class="flex gap-4 overflow-x-auto scrollbar-hide px-1 h-28">
+      <div *ngFor="let cat of categorias" class="flex flex-col items-center shrink-0 w-24 text-center cursor-pointer"
+        (click)="onSelecCategory(cat.name)">
+        <img [src]="cat.img" alt="{{ cat.name }}" class="rounded-full w-16 h-16 object-cover border border-gray-300" />
+        <span class="text-sm mt-1 leading-tight break-words max-w-full text-ellipsis">
+          {{ cat.name }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-lg font-bold">Principales</h2>
+      <span class="text-sm text-gray-500 cursor-pointer hover:underline" (click)="clearFilters()">
+        Ver todo
+      </span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div *ngFor="let p of filteredProducts" class="bg-blue-50 rounded-xl p-3 shadow-sm text-sm relative">
+        <div class="text-red-500 font-bold">#{{ p.barcode }}</div>
+        <div class="font-semibold">{{ p.name }}</div>
+        <div class="mt-1" *ngIf="roleId == roles.Vendedor">Disp.: {{ p.stock }}</div>
+        <div class="font-bold mt-1">${{ p.price }} c/u</div>
+
+        <button
+          class="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-md"
+          (click)="addToCart(p)">
+          <span class="material-icons text-sm">add</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
