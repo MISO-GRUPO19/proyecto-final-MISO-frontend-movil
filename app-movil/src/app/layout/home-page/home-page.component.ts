@@ -13,7 +13,7 @@ import { filter } from 'rxjs';
   imports: [CommonModule, RouterOutlet, RouterModule]
 })
 export class HomePageComponent implements OnInit {
-  public roleId?: number;
+  public roleId?: number = rolesEnum.Vendedor;
   public roles = rolesEnum;
   pageTitle = '';
   constructor(private router: Router, private route: ActivatedRoute) { }

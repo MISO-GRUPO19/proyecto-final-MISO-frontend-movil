@@ -1,0 +1,57 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div *ngFor="let visit of visits" class="bg-white shadow-sm rounded-lg p-4 mb-4 border border-gray-200">
+  <!-- Cabecera con cliente -->
+  <div class="flex justify-between items-start mb-2">
+    <div class="flex items-center gap-2">
+      <span class="material-icons text-gray-500">person</span>
+      <div>
+        <p class="text-xs text-gray-500">Cliente</p>
+        <p class="text-sm font-medium text-gray-700">{{ visit.clientName }}</p>
+      </div>
+    </div>
+    <span [ngClass]="getTagClass(visit.timingTag)" class="text-xs font-semibold px-2 py-1 rounded">
+      {{ visit.timingTag }}
+    </span>
+  </div>
+
+  <!-- Línea divisoria -->
+  <div class="border-t border-gray-200 my-3"></div>
+
+  <!-- Tienda -->
+  <p class="text-sm font-medium text-gray-800 mb-2">{{ visit.storeName }}</p>
+
+  <!-- Fecha y Teléfono: mismos estilos y alineados -->
+  <div class="flex justify-between text-xs text-gray-600">
+    <div>
+      <p class="text-xs text-gray-800">Fecha y hora</p>
+      <p class="text-sm font-semibold text-gray-500">{{ visit.visitDate }}</p>
+    </div>
+    <div class="text-right">
+      <p class="text-xs text-gray-800">Número teléfono cliente</p>
+      <p class="text-sm font-semibold text-gray-500">{{ visit.phoneNumber }}</p>
+    </div>
+  </div>
+
+  <!-- Dirección -->
+  <div class="mt-2">
+    <p class="text-xs text-gray-500 font-semibold">Dirección</p>
+    <p class="text-sm text-gray-800">{{ visit.address }}</p>
+  </div>
+
+  <!-- Estado y botón de acción -->
+  <div class="flex justify-between items-center mt-4">
+    <span
+      [ngClass]="{
+        'bg-green-100 text-green-800': visit.visitStatus === 'visited',
+        'bg-orange-100 text-orange-800': visit.visitStatus === 'notVisited'
+      }"
+      class="text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+      {{ visit.visitStatus === 'visited' ? 'Visitado' : 'No visitado' }}
+    </span>
+
+    <button (click)="openCamara(visit.id)" title="Grabar video" class="text-gray-600 hover:text-black">
+      <span class="material-icons text-lg">videocam</span>
+    </button>
+  </div>
+</div>
