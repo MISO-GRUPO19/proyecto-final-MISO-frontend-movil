@@ -29,11 +29,11 @@
     <div class="mt-4 grid grid-cols-2 text-sm">
       <div>
         <div class="text-gray-400">Vendedor</div>
-        <div>{{ e.seller_info.name }}</div>
+        <div>{{ e.seller_info?.name ?? '-' }}</div>
       </div>
       <div>
         <div class="text-gray-400">Número de vendedor</div>
-        <div>{{ e.seller_info.telephone }}</div>
+        <div>{{ e.seller_info?.telephone ?? '-'}}</div>
       </div>
     </div>
 

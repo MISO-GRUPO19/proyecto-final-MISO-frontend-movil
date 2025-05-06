@@ -17,9 +17,9 @@ export class AuthManager {
     login(credentials: { email: string; password: string }): Observable<LoginResponse> {
         return this.http.post<LoginResponse>(this.apiUrl + '/users/login', credentials).pipe(
             tap(response => {
-                sessionStorage.setItem('access_token', response.access_token);
-                sessionStorage.setItem('refresh_token', response.refresh_token);
-                sessionStorage.setItem('user', JSON.stringify(response.user));
+                localStorage.setItem('access_token', response.access_token);
+                localStorage.setItem('refresh_token', response.refresh_token);
+                localStorage.setItem('user', JSON.stringify(response.user));
             })
         );
     }
@@ -33,17 +33,17 @@ export class AuthManager {
     }
 
     logout() {
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('refresh_token');
-        sessionStorage.removeItem('user');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
     }
 
     getAccessToken(): string | null {
-        return sessionStorage.getItem('access_token');
+        return localStorage.getItem('access_token');
     }
 
     isLoggedIn(): boolean {
-        return !!sessionStorage.getItem('access_token');
+        return !!localStorage.getItem('access_token');
     }
 
 }

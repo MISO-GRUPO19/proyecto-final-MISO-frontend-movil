@@ -25,7 +25,7 @@ export class HomePageComponent implements OnInit {
       .subscribe(() => {
         this.updatePageTitle();
       });
-    const userData = sessionStorage.getItem('user');
+    const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       this.roleId = user.role;
@@ -48,9 +48,9 @@ export class HomePageComponent implements OnInit {
     }
   }
   logout(): void {
-    sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('refresh_token');
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
     this.router.navigate(['/auth/login']);
   }
 }

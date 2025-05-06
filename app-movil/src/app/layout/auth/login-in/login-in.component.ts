@@ -18,9 +18,9 @@ export class LoginInComponent implements OnInit {
   }
 
   goToHome() {
-    sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('refresh_token');
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
     this.router.navigate(['/auth/login']);
   }
 }

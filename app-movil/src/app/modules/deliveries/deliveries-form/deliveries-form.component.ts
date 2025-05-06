@@ -16,25 +16,29 @@ export class DeliveriesFormComponent implements OnInit {
   deliveryId: string = '';
   delivery: OrderResponse | null = null;
   orderState = OrderState;
+
   constructor(private route: ActivatedRoute, private ordersManager: OrdersManager) { }
 
   ngOnInit(): void {
-    debugger;
     this.deliveryId = this.route.snapshot.paramMap.get('id') || '';
-    this.fetchDeliveries();
+    if (this.deliveryId) {
+      this.fetchDeliveries();
+    } else {
+      console.error('Delivery ID is missing');
+      this.delivery = null;
+    }
   }
-  fetchDeliveries() {
 
-    if (this.deliveryId != null) {
+  fetchDeliveries() {
+    if (this.deliveryId) {
       this.ordersManager.getOrdersById(this.deliveryId).subscribe({
         next: (response: OrderResponse[]) => {
-          this.delivery = response[0];
+          this.delivery = response.length > 0 ? response[0] : null;  // Si la respuesta está vacía, asignamos null
         },
         error: (err) => {
           console.error(err);
         }
       });
     }
-
   }
 }
