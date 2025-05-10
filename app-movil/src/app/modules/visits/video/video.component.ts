@@ -1,59 +1,84 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MediaCapture, MediaFile, CaptureVideoOptions } from '@awesome-cordova-plugins/media-capture/ngx';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 @Component({
   selector: 'app-video',
+  standalone: true,
   templateUrl: './video.component.html',
-  styleUrls: ['./video.component.css']
+  styleUrls: ['./video.component.css'],
+  imports: [CommonModule],
 })
-export class VideoComponent implements OnInit {
+export class VideoComponent {
+  videoPath: string | null = null;
+  errorMessage: string | null = null;
 
-  ngOnInit(): void {
-  }
+  constructor(
+    private mediaCapture: MediaCapture,
+    private androidPermissions: AndroidPermissions
+  ) { }
 
-  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  async ensurePermissions(): Promise<boolean> {
+    const permissions = [
+      this.androidPermissions.PERMISSION.CAMERA,
+      this.androidPermissions.PERMISSION.RECORD_AUDIO,
+      this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE,
+      this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE
+    ];
 
-  stream: MediaStream | null = null;
-  recorder!: MediaRecorder;
-  chunks: Blob[] = [];
-  recording = false;
+    try {
+      for (const permission of permissions) {
+        const check = await this.androidPermissions.checkPermission(permission);
+        console.log(`🔍 Estado permiso ${permission}:`, check.hasPermission);
 
-  startCamera(): void {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-      this.stream = stream;
-      const video = this.videoPlayer.nativeElement;
-      video.srcObject = stream;
-      video.play();
-    }).catch(err => {
-      console.error('Error accediendo a la cámara:', err);
-      alert('No se pudo acceder a la cámara.');
-    });
-  }
+        if (!check.hasPermission) {
+          const result = await this.androidPermissions.requestPermission(permission);
+          console.log(`📝 Resultado solicitud ${permission}:`, result.hasPermission);
 
-  startRecording(): void {
-    if (!this.stream) return;
+          if (!result.hasPermission) {
+            this.errorMessage = `⛔ Permiso denegado: ${permission}`;
+            return false;
+          }
+        }
+      }
 
-    this.chunks = [];
-    this.recorder = new MediaRecorder(this.stream);
-    this.recorder.ondataavailable = e => this.chunks.push(e.data);
-    this.recorder.onstop = () => this.downloadVideo();
-    this.recorder.start();
-    this.recording = true;
-  }
+      console.log('✅ Todos los permisos fueron otorgados');
+      this.errorMessage = null;
+      return true;
 
-  stopRecording(): void {
-    if (this.recorder && this.recording) {
-      this.recorder.stop();
-      this.recording = false;
+    } catch (err) {
+      console.error('🛑 Error al verificar permisos:', err);
+      this.errorMessage = 'Ocurrió un error al verificar los permisos.';
+      return false;
     }
   }
 
-  downloadVideo(): void {
-    const blob = new Blob(this.chunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'grabacion.webm';
-    a.click();
-    URL.revokeObjectURL(url);
+  async startVideoCapture(): Promise<void> {
+    this.errorMessage = null;
+
+    const granted = await this.ensurePermissions();
+    if (!granted) {
+      this.errorMessage = 'Debes otorgar permisos de cámara, micrófono y almacenamiento.';
+      return;
+    }
+
+    const options: CaptureVideoOptions = {
+      limit: 1,
+      duration: 60
+    };
+
+    try {
+      const result = await this.mediaCapture.captureVideo(options);
+      if (Array.isArray(result) && result.length > 0) {
+        this.videoPath = result[0].fullPath;
+        console.log('📹 Ruta del video:', this.videoPath);
+      } else {
+        this.errorMessage = 'No se recibió ningún video.';
+      }
+    } catch (err: any) {
+      console.error('🎥 Error al capturar video:', err);
+      this.errorMessage = 'No se pudo grabar el video. Código: ' + (err.code ?? 'desconocido');
+    }
   }
 }

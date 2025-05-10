@@ -7,7 +7,7 @@ export const visitsRoutes: Routes = [
         component: VisitsListComponent,
     },
     {
-        path: 'video/:id',
+        path: 'video',
         component: VideoComponent,
     },
     //  {

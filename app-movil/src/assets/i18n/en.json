@@ -10,6 +10,7 @@
       "ThePasswordsAreNotEquals": "The passwords are not equals",
       "MustBeEmail": "Must Be Email",
       "IsRequiredTrue": "Is Required" 
-    }
+    },
+    "ProductInsufficientStock": "Product Insufficient Stock"
   }
   

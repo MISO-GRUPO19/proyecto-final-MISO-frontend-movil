@@ -6,6 +6,8 @@ import { routes } from './app.routes';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
+import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 // Función que carga los archivos de traducción desde /assets/i18n/*.json
 export function HttpLoaderFactory(http: HttpClient) {
@@ -28,5 +30,7 @@ export const appConfig: ApplicationConfig = {
         },
       })
     ),
+    MediaCapture,
+    AndroidPermissions,
   ],
 };
