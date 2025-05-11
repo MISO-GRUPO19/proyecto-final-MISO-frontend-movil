@@ -4,6 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { VisitsManager } from '../services/visits.service';
+import { SellerVisits, VisitList } from '../models/visits.model';
 
 @Component({
   selector: 'app-visits-list',
@@ -12,41 +14,41 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
   standalone: true,
   imports: [CommonModule, RxReactiveFormsModule, ReactiveFormsModule, TranslateModule, RouterModule],
 })
-export class VisitsListComponent {
+export class VisitsListComponent implements OnInit {
 
-  constructor(private router: Router, private route: ActivatedRoute) { }
-  visits = [
-    {
-      id: 1,
-      clientName: 'Surtiviveres',
-      storeName: 'Tienda Río Bravo',
-      visitDate: '4/5/2026 10:00 a. m.',
-      phoneNumber: '3182192112',
-      address: 'Av. Cristóbal Colón E5-35, Quito 170522',
-      visitStatus: 'visited',
-      timingTag: 'Próximo',
-    },
-    {
-      id: 2,
-      clientName: 'Estación Surtidora',
-      storeName: 'Tienda Rionegro',
-      visitDate: '4/5/2026 5:00 p. m.',
-      phoneNumber: '31212212312',
-      address: 'Avenida NNNU Oe4-27 y, Av. de la República 170508',
-      visitStatus: 'visited',
-      timingTag: 'Más tarde',
-    },
-    {
-      id: 3,
-      clientName: 'Mercado Carapungo',
-      storeName: 'Tienda Río Quijos',
-      visitDate: '3/5/2026 6:00 p. m.',
-      phoneNumber: '3212812881',
-      address: 'Río Quijos N15-24 y, Quito 170204',
-      visitStatus: 'notVisited',
-      timingTag: 'Visitado',
-    },
-  ];
+  visits: VisitList[] = [];
+  error: string | null = null;
+  sellerId: string = '';
+  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) { 
+
+  }
+  ngOnInit(): void {
+   const userData = localStorage.getItem('user');
+       if (userData) {
+         const user = JSON.parse(userData);
+         this.sellerId = user.id;         
+       this.fetchVisits();
+        }
+
+  }
+  
+ fetchVisits() {
+  if (this.sellerId) {
+    this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
+      next: (response: SellerVisits) => {
+        this.visits = response.visits_info;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = err.error?.mssg || 'Error de autenticación';
+      }
+    });
+    
+  }
+   
+  }
+
+
 
   getTagClass(tag: string): string {
     switch (tag) {
@@ -62,7 +64,7 @@ export class VisitsListComponent {
   }
 
 
-  openCamara(id: number): void {
-    this.router.navigate(['/home/visits/video/' + id],);
+  openCamara(id: string): void {
+    // this.router.navigate(['/home/visits/video/' + id],);
   }
 }

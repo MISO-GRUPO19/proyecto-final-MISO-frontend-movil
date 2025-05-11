@@ -5,6 +5,8 @@ import { of, throwError } from 'rxjs';
 import { OrdersManager } from '../../deliveries/services/deliveries.service';
 import { ProductsShoppingCar } from '../../inventory/models/inventory.model';
 import { rolesEnum } from '../../../layout/roles.enum';
+import { TranslateModule } from '@ngx-translate/core'; // 👈 Añadir
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ShoppingCartComponent', () => {
   let component: ShoppingCartComponent;
@@ -22,7 +24,11 @@ describe('ShoppingCartComponent', () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [ShoppingCartComponent],
+      imports: [
+        ShoppingCartComponent,
+        HttpClientTestingModule,
+        TranslateModule.forRoot(), // 👈 Importante
+      ],
       providers: [
         { provide: OrdersManager, useValue: mockOrdersManager },
         { provide: Router, useValue: routerSpy }
