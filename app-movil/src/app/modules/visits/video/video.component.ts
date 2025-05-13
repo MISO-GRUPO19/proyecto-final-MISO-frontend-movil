@@ -23,32 +23,33 @@ export class VideoComponent {
     const permissions = [
       this.androidPermissions.PERMISSION.CAMERA,
       this.androidPermissions.PERMISSION.RECORD_AUDIO,
-      this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE,
-      this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE
+      this.androidPermissions.PERMISSION.READ_MEDIA_AUDIO,
+      this.androidPermissions.PERMISSION.READ_MEDIA_VIDEO,
+      this.androidPermissions.PERMISSION.INTERNET
     ];
 
     try {
       for (const permission of permissions) {
         const check = await this.androidPermissions.checkPermission(permission);
-        console.log(`🔍 Estado permiso ${permission}:`, check.hasPermission);
+        console.log(`Estado permiso ${permission}:`, check.hasPermission);
 
         if (!check.hasPermission) {
           const result = await this.androidPermissions.requestPermission(permission);
-          console.log(`📝 Resultado solicitud ${permission}:`, result.hasPermission);
+          console.log(`Resultado solicitud ${permission}:`, result.hasPermission);
 
           if (!result.hasPermission) {
-            this.errorMessage = `⛔ Permiso denegado: ${permission}`;
+            this.errorMessage = `Permiso denegado: ${permission}`;
             return false;
           }
         }
       }
 
-      console.log('✅ Todos los permisos fueron otorgados');
+      console.log('Todos los permisos fueron otorgados');
       this.errorMessage = null;
       return true;
 
-    } catch (err) {
-      console.error('🛑 Error al verificar permisos:', err);
+    } catch (err: any) {
+      console.error('Error al verificar permisos:', err.error);
       this.errorMessage = 'Ocurrió un error al verificar los permisos.';
       return false;
     }
@@ -77,7 +78,7 @@ export class VideoComponent {
         this.errorMessage = 'No se recibió ningún video.';
       }
     } catch (err: any) {
-      console.error('🎥 Error al capturar video:', err);
+      console.error('Error al capturar video:', err);
       this.errorMessage = 'No se pudo grabar el video. Código: ' + (err.code ?? 'desconocido');
     }
   }
