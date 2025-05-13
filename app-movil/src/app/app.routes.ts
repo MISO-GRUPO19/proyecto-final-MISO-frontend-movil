@@ -5,6 +5,7 @@ import { ProfileFormComponent } from './modules/profile/profile-form/profile-for
 import { LoginInComponent } from './layout/auth/login-in/login-in.component';
 import { ClientsListComponent } from './modules/clients/clients-list/clients-list.component';
 import { InventoryListComponent } from './modules/inventory/inventory-list/inventory-list.component';
+import { VisitsListComponent } from './modules/visits/visits-list/visits-list.component';
 import { ProductsListComponent } from './modules/products/products-list/products-list.component';
 import { ShoppingCartComponent } from './modules/shopping-cart/shopping-cart/shopping-cart.component';
 import { LoadingComponent } from './components/loading/loading.component';
@@ -19,7 +20,7 @@ export const routes: Routes = [
             { path: 'deliveries', loadChildren: () => import('./modules/deliveries/deliveries.routes').then((r) => r.deliveriesRoutes), data: { title: 'Entregas' } },
             // { path: 'profile', component: ProfileComponent },
             { path: 'inventory', component: InventoryListComponent, data: { title: 'Inventario' } },
-            // { path: 'visits', component: VisitsComponent },
+            { path: 'visits', loadChildren: () => import('./modules/visits/visits.routes').then((r) => r.visitsRoutes), data: { title: 'Visitas' } },
             { path: 'shopping-cart', component: ShoppingCartComponent, data: { title: 'Carrito de Compras' } },
             { path: 'clients', component: ClientsListComponent, data: { title: 'Clientes' } },
             { path: '', redirectTo: 'products', pathMatch: 'full' },

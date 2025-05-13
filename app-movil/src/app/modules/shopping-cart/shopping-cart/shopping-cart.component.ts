@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { rolesEnum } from '../../../layout/roles.enum';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -20,7 +21,7 @@ export class ShoppingCartComponent implements OnInit {
   storeName: string | null = null;
   clientId?: string;
   roles = rolesEnum;
-  constructor(private ordersManager: OrdersManager, private router: Router) { }
+  constructor(private ordersManager: OrdersManager, private router: Router, private translateService: TranslateService) { }
 
   ngOnInit() {
     this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
@@ -98,6 +99,11 @@ export class ShoppingCartComponent implements OnInit {
         });
       },
       error: (err) => {
+        debugger;
+        const key = err.error?.error;
+        const errorMessage = key && key.trim() !== ''
+          ? this.translateService.instant(key)
+          : 'Error de órdenes'; alert(errorMessage + ' ' + err.error?.barcode);
         console.error(err);
       }
     });

@@ -21,7 +21,7 @@ export class ProfileFormComponent implements OnInit {
   error: string | null = null;
   hide = true;
   hideConfirm = true;
-  countries: string[] = ['Colombia', 'México', 'Argentina', 'España'];
+  countries: string[] = ['Brasil', 'Argentina', 'Chile', 'Ecuador', 'Colombia'];
   public subscriptions: Subscription[] = [];
   email: string | null = null;
 
