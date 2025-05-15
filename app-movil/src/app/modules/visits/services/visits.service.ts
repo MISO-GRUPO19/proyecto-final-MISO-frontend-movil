@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { inject, Injectable } from '@angular/core';
-import { SellerVisits } from '../models/visits.model';
+import { ChangeStateModel, ChangeStateModelResponse, SellerVisits } from '../models/visits.model';
 
 @Injectable({
     providedIn: 'root',
@@ -18,8 +18,11 @@ export class VisitsManager {
     constructor() { }
 
     getVisitsBySeller(sellerId: string): Observable<SellerVisits> {
-        return this.http.get<SellerVisits>(this.apiUrl + '/orders/visits/' + sellerId , { headers: this.headers })
+        return this.http.get<SellerVisits>(this.apiUrl + '/orders/visits/' + sellerId, { headers: this.headers })
     }
 
+    changeStateVisit(visitId: string, model: ChangeStateModel): Observable<ChangeStateModelResponse> {
+        return this.http.put<ChangeStateModelResponse>(this.apiUrl + '/orders/visit/' + visitId, model, { headers: this.headers })
+    }
 
 }

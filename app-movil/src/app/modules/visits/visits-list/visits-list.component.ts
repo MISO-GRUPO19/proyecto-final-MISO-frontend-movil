@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { VisitsManager } from '../services/visits.service';
-import { SellerVisits, VisitList } from '../models/visits.model';
+import { ChangeStateModelResponse, SellerVisits, STATUS_VISITS, VisitList, VisitStatus } from '../models/visits.model';
 
 @Component({
   selector: 'app-visits-list',
@@ -15,56 +15,71 @@ import { SellerVisits, VisitList } from '../models/visits.model';
   imports: [CommonModule, RxReactiveFormsModule, ReactiveFormsModule, TranslateModule, RouterModule],
 })
 export class VisitsListComponent implements OnInit {
-
+  VisitStatus = VisitStatus;
+  STATUS_VISITS = STATUS_VISITS;
   visits: VisitList[] = [];
   error: string | null = null;
   sellerId: string = '';
-  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) { 
+  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) {
 
   }
   ngOnInit(): void {
-   const userData = localStorage.getItem('user');
-       if (userData) {
-         const user = JSON.parse(userData);
-         this.sellerId = user.id;         
-       this.fetchVisits();
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      this.sellerId = user.id;
+      this.fetchVisits();
+    }
+
+  }
+
+  fetchVisits() {
+    if (this.sellerId) {
+      this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
+        next: (response: SellerVisits) => {
+          this.visits = response.visits_info;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err.error?.mssg || 'Error de autenticación';
         }
+      });
+
+    }
 
   }
-  
- fetchVisits() {
-  if (this.sellerId) {
-    this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
-      next: (response: SellerVisits) => {
-        this.visits = response.visits_info;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = err.error?.mssg || 'Error de autenticación';
-      }
-    });
-    
-  }
-   
-  }
-
 
 
   getTagClass(tag: string): string {
     switch (tag) {
       case 'Próximo':
         return 'bg-orange-100 text-orange-800';
-      case 'Más tarde':
+      case VisitStatus.NO_VISITADO:
         return 'bg-yellow-100 text-yellow-800';
-      case 'Visitado':
+      case VisitStatus.VISITADO:
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-200 text-gray-800';
     }
   }
 
+  onVisitStatusClick(visit: VisitList, state: string): void {
+    if (visit) {
+      this.visitsManager.changeStateVisit(visit.visit_id, { state: state }).subscribe({
+        next: (response: ChangeStateModelResponse) => {
+          alert(response.message);
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err.error?.mssg || 'Error de autenticación';
+        }
+      });
 
+    }
+  }
   openCamara(id: string): void {
     // this.router.navigate(['/home/visits/video/' + id],);
   }
 }
+
+
