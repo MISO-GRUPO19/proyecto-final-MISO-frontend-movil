@@ -19,33 +19,33 @@ export class VisitsListComponent implements OnInit {
   visits: VisitList[] = [];
   error: string | null = null;
   sellerId: string = '';
-  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) { 
+  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) {
 
   }
   ngOnInit(): void {
-   const userData = localStorage.getItem('user');
-       if (userData) {
-         const user = JSON.parse(userData);
-         this.sellerId = user.id;         
-       this.fetchVisits();
-        }
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      this.sellerId = user.id;
+      this.fetchVisits();
+    }
 
   }
-  
- fetchVisits() {
-  if (this.sellerId) {
-    this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
-      next: (response: SellerVisits) => {
-        this.visits = response.visits_info;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = err.error?.mssg || 'Error de autenticación';
-      }
-    });
-    
-  }
-   
+
+  fetchVisits() {
+    if (this.sellerId) {
+      this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
+        next: (response: SellerVisits) => {
+          this.visits = response.visits_info;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err.error?.mssg || 'Error de autenticación';
+        }
+      });
+
+    }
+
   }
 
 
@@ -65,6 +65,6 @@ export class VisitsListComponent implements OnInit {
 
 
   openCamara(id: string): void {
-    // this.router.navigate(['/home/visits/video/' + id],);
+    this.router.navigate(['/home/visits/video/' + id],);
   }
 }
