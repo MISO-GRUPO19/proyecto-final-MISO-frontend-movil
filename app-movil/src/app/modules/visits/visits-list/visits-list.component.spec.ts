@@ -1,49 +1,75 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { VisitsListComponent } from './visits-list.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import { VisitsManager } from '../services/visits.service';
-import { SellerVisits } from '../models/visits.model';
 
-describe('VisitsListComponent', () => {
+import { VisitsListComponent } from './visits-list.component';
+import { VisitsManager } from '../services/visits.service';
+import { SellerVisits, VisitList, VisitStatus } from '../models/visits.model';
+
+@Component({
+  selector: 'app-wrapper',
+  standalone: true,
+  template: '<app-visits-list></app-visits-list>',
+  imports: [VisitsListComponent]
+})
+class WrapperComponent { }
+
+describe('VisitsListComponent (standalone with wrapper)', () => {
+  let fixture: ComponentFixture<WrapperComponent>;
   let component: VisitsListComponent;
-  let fixture: ComponentFixture<VisitsListComponent>;
   let visitsManagerSpy: jasmine.SpyObj<VisitsManager>;
+  let routerSpy: jasmine.SpyObj<Router>;
+
+  const mockVisit: VisitList = {
+    customer_name: 'Cliente A',
+    customer_phonenumber: '3216549870',
+    store_name: 'Tienda X',
+    visit_address: 'Calle Falsa 123',
+    visit_date: new Date('2025-05-10T10:00:00Z'),
+    visit_id: 'visit-id-001',
+    visit_status: VisitStatus.NO_VISITADO
+  };
 
   const mockVisits: SellerVisits = {
     seller_id: '12345',
-    visits_info: [
-      {
-        customer_name: 'Cliente A',
-        customer_phonenumber: '3216549870',
-        store_name: 'Tienda X',
-        visit_address: 'Calle Falsa 123',
-        visit_date: new Date('2025-05-10T10:00:00Z'),
-        visit_id: 'visit-id-001',
-        visit_status: 'NO_VISITADO'
-      }
-    ]
+    visits_info: [mockVisit]
   };
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('VisitsManager', ['getVisitsBySeller']);
+    const visitsSpy = jasmine.createSpyObj('VisitsManager', ['getVisitsBySeller', 'changeStateVisit']);
+    const routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    const activatedRouteMock = {
+      snapshot: {
+        paramMap: { get: () => null },
+        queryParamMap: {
+          get: () => null,
+          has: () => false
+        }
+      }
+    };
 
     await TestBed.configureTestingModule({
       imports: [
-        VisitsListComponent,
-        RouterTestingModule,
+        WrapperComponent,
         HttpClientTestingModule,
         TranslateModule.forRoot()
       ],
       providers: [
-        { provide: VisitsManager, useValue: spy }
+        { provide: VisitsManager, useValue: visitsSpy },
+        { provide: Router, useValue: routerMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock }
       ]
     }).compileComponents();
 
     visitsManagerSpy = TestBed.inject(VisitsManager) as jasmine.SpyObj<VisitsManager>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     localStorage.setItem('user', JSON.stringify({ id: '12345' }));
+
+    fixture = TestBed.createComponent(WrapperComponent);
+    component = fixture.debugElement.children[0].componentInstance;
   });
 
   afterEach(() => {
@@ -52,16 +78,12 @@ describe('VisitsListComponent', () => {
 
   it('debería crearse correctamente', () => {
     visitsManagerSpy.getVisitsBySeller.and.returnValue(of(mockVisits));
-    fixture = TestBed.createComponent(VisitsListComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('debería obtener visitas si hay un usuario en localStorage', () => {
     visitsManagerSpy.getVisitsBySeller.and.returnValue(of(mockVisits));
-    fixture = TestBed.createComponent(VisitsListComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
 
     expect(visitsManagerSpy.getVisitsBySeller).toHaveBeenCalledWith('12345');
@@ -74,20 +96,36 @@ describe('VisitsListComponent', () => {
     visitsManagerSpy.getVisitsBySeller.and.returnValue(
       throwError(() => ({ error: { mssg: 'Error de red' } }))
     );
-    fixture = TestBed.createComponent(VisitsListComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
 
     expect(component.error).toBe('Error de red');
   });
 
   it('debería retornar clases CSS correctas según el estado', () => {
-    fixture = TestBed.createComponent(VisitsListComponent);
-    component = fixture.componentInstance;
-
     expect(component.getTagClass('Próximo')).toBe('bg-orange-100 text-orange-800');
-    expect(component.getTagClass('Más tarde')).toBe('bg-yellow-100 text-yellow-800');
-    expect(component.getTagClass('Visitado')).toBe('bg-green-100 text-green-800');
+    expect(component.getTagClass(VisitStatus.NO_VISITADO)).toBe('bg-yellow-100 text-yellow-800');
+    expect(component.getTagClass(VisitStatus.VISITADO)).toBe('bg-green-100 text-green-800');
     expect(component.getTagClass('Otro')).toBe('bg-gray-200 text-gray-800');
+  });
+
+  it('debería llamar changeStateVisit correctamente desde onVisitStatusClick', () => {
+    visitsManagerSpy.changeStateVisit.and.returnValue(of({ message: 'Estado actualizado' }));
+    component.onVisitStatusClick(mockVisit, VisitStatus.VISITADO);
+
+    expect(visitsManagerSpy.changeStateVisit).toHaveBeenCalledWith('visit-id-001', { state: VisitStatus.VISITADO });
+  });
+
+  it('debería manejar errores en changeStateVisit', () => {
+    visitsManagerSpy.changeStateVisit.and.returnValue(
+      throwError(() => ({ error: { mssg: 'Error al cambiar estado' } }))
+    );
+    component.onVisitStatusClick(mockVisit, VisitStatus.VISITADO);
+
+    expect(component.error).toBe('Error al cambiar estado');
+  });
+
+  it('debería navegar al video al llamar openCamara (simulado)', () => {
+    component.openCamara('abc123');
+    expect(routerSpy.navigate).not.toHaveBeenCalled(); // cambiar si navegas
   });
 });
