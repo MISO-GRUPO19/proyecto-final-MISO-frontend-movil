@@ -99,7 +99,6 @@ export class ShoppingCartComponent implements OnInit {
         });
       },
       error: (err) => {
-        debugger;
         const key = err.error?.error;
         const errorMessage = key && key.trim() !== ''
           ? this.translateService.instant(key)

@@ -24,14 +24,13 @@ export class VisitsManager {
 
     uploadVisitVideo(visitId: string, videoFile: File): Observable<any> {
         const formData = new FormData();
-        formData.append('video', videoFile, videoFile.name);
-        formData.append('visitId', visitId);
-
-        return this.http.post(`${this.apiUrl}/orders/visits/video`, formData, { headers: this.headers });
+        formData.append('video', videoFile);
+        return this.http.post(`${this.apiUrl}/ai/${visitId}`, formData, { headers: this.headers });
     }
-    getVisitAnalysis(videoId: string): Observable<VisitAnalysisResult> {
+
+    getVisitAnalysis(visitId: string): Observable<VisitAnalysisResult> {
         return this.http.get<VisitAnalysisResult>(
-            `${this.apiUrl}/orders/visits/video/${videoId}/analysis`,
+            `${this.apiUrl}/ai/result/${visitId}`,
             { headers: this.headers }
         );
     }

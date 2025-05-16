@@ -5,26 +5,38 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { File as FilePlugin } from '@awesome-cordova-plugins/file/ngx';
 import { VisitsManager } from '../services/visits.service';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-video',
-  standalone: true,
   templateUrl: './video.component.html',
   styleUrls: ['./video.component.css'],
   imports: [CommonModule],
+  standalone: true,
+  providers: [MediaCapture, AndroidPermissions, FilePlugin],
 })
 export class VideoComponent {
   videoPath: string | null = null;
   errorMessage: string | null = null;
+  visitId: string = '12345';
+
 
   constructor(
     private mediaCapture: MediaCapture,
     private androidPermissions: AndroidPermissions,
     private file: FilePlugin,
     private visitsManager: VisitsManager,
-    private router: Router
-  ) { }
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
+    this.route.paramMap.subscribe(async params => {
+      const id = params.get('id');
+      if (id) {
+        this.visitId = id;
+        await this.startVideoCapture();
+      }
+    });
+  }
 
   async ensurePermissions(): Promise<boolean> {
     const permissions = [
@@ -64,52 +76,51 @@ export class VideoComponent {
 
   async startVideoCapture(): Promise<void> {
     this.errorMessage = null;
-
     const granted = await this.ensurePermissions();
     if (!granted) {
       this.errorMessage = 'Debes otorgar permisos de cámara, micrófono y almacenamiento.';
       return;
     }
-
     const options: CaptureVideoOptions = {
       limit: 1,
       duration: 60
     };
-
     try {
       const result = await this.mediaCapture.captureVideo(options);
       if (Array.isArray(result) && result.length > 0) {
         this.videoPath = result[0].fullPath;
-        console.log('Ruta del video:', this.videoPath);
+        await this.uploadCapturedVideo(this.videoPath, this.visitId);
+
       } else {
         this.errorMessage = 'No se recibió ningún video.';
       }
     } catch (err: any) {
-      console.error('Error al capturar video:', err);
-      this.errorMessage = 'No se pudo grabar el video. Código: ' + (err.code ?? 'desconocido');
+      const errorCode = err?.code;
+      const errorMessage = err?.message ?? 'desconocido';
+
+      if (errorCode === 3) {
+        console.warn('Captura cancelada por el usuario.');
+        this.errorMessage = 'La grabación fue cancelada.';
+      } else {
+        console.error('Error al capturar video:', err);
+        this.errorMessage = `Error al capturar video. Código: ${errorCode}, mensaje: ${errorMessage}`;
+      }
     }
   }
+
   async uploadCapturedVideo(fullPath: string, visitId: string) {
     try {
-      const fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
-      const filePath = fullPath.substring(0, fullPath.lastIndexOf('/') + 1);
-
       this.file.resolveLocalFilesystemUrl(fullPath).then((fileEntry: any) => {
         fileEntry.file((file: File) => {
-          const formData = new FormData();
-          formData.append('video', file, fileName);
-          formData.append('visitId', visitId); // Aquí se incluye el visitId
-
           this.visitsManager.uploadVisitVideo(visitId, file).subscribe({
             next: () => {
               console.log('Video subido exitosamente');
               alert('Video subido exitosamente');
-              this.router.url.startsWith('/home/visits');
+              this.router.navigate(['/home/visits'],);
             },
-
             error: (err) => {
               console.error(' Error al subir el video:', err);
-              this.errorMessage = 'No se pudo subir el video.';
+              this.errorMessage = 'Error al subir el video: ' + err + file.name;
             }
           });
         }, (err: any) => {

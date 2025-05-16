@@ -54,6 +54,6 @@ export const routes: Routes = [
         ]
     },
     {
-        path: '', redirectTo: 'home/visits/video', pathMatch: 'full'
+        path: '', redirectTo: 'auth', pathMatch: 'full'
     },
 ];
