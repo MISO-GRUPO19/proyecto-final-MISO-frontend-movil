@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { VisitsManager } from '../services/visits.service';
 import { SellerVisits, VisitList } from '../models/visits.model';
+import { VisitAnalysisResult } from '../models/details-video.model';
 
 @Component({
   selector: 'app-visits-list',
@@ -19,33 +20,33 @@ export class VisitsListComponent implements OnInit {
   visits: VisitList[] = [];
   error: string | null = null;
   sellerId: string = '';
-  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) { 
+  constructor(private router: Router, private route: ActivatedRoute, private visitsManager: VisitsManager,) {
 
   }
   ngOnInit(): void {
-   const userData = localStorage.getItem('user');
-       if (userData) {
-         const user = JSON.parse(userData);
-         this.sellerId = user.id;         
-       this.fetchVisits();
-        }
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      this.sellerId = user.id;
+      this.fetchVisits();
+    }
 
   }
-  
- fetchVisits() {
-  if (this.sellerId) {
-    this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
-      next: (response: SellerVisits) => {
-        this.visits = response.visits_info;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = err.error?.mssg || 'Error de autenticación';
-      }
-    });
-    
-  }
-   
+
+  fetchVisits() {
+    if (this.sellerId) {
+      this.visitsManager.getVisitsBySeller(this.sellerId).subscribe({
+        next: (response: SellerVisits) => {
+          this.visits = response.visits_info;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err.error?.mssg || 'Error de autenticación';
+        }
+      });
+
+    }
+
   }
 
 
@@ -63,8 +64,14 @@ export class VisitsListComponent implements OnInit {
     }
   }
 
-
   openCamara(id: string): void {
-    // this.router.navigate(['/home/visits/video/' + id],);
+    this.visitsManager.getVisitAnalysis(id).subscribe({
+      next: (res: VisitAnalysisResult) => {
+        this.router.navigate(['/home/visits/video/details/' + id],);
+      },
+      error: (err) => {
+        this.router.navigate(['/home/visits/video/' + id],);
+      }
+    });
   }
 }
