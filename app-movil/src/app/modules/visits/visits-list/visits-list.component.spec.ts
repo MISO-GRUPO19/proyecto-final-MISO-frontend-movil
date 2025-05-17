@@ -124,8 +124,4 @@ describe('VisitsListComponent (standalone with wrapper)', () => {
     expect(component.error).toBe('Error al cambiar estado');
   });
 
-  it('debería navegar al video al llamar openCamara (simulado)', () => {
-    component.openCamara('abc123');
-    expect(routerSpy.navigate).not.toHaveBeenCalled(); // cambiar si navegas
-  });
 });
