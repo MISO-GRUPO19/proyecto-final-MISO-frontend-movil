@@ -1,24 +1,32 @@
-export class Visit {
-    public id: number = 0;
-    public clientName: string = '';
-    public storeName: string = '';
-    public visitDate: string = '';
-    public phoneNumber: string = '';
-    public address: string = '';
-    public visitStatus: 'visited' | 'notVisited' | 'next' = 'notVisited';
-    public timingTag: 'Próximo' | 'Más tarde' | 'Visitado' = 'Próximo';
+export class SellerVisits {
+  public seller_id: string = '';
+  public visits_info: VisitList[] = [];
+}
+export class VisitList {
+  public customer_name: string = '';
+  public customer_phonenumber: string = '';
+  public store_name: string = '';
+  public visit_address: string = '';
+  public visit_date: Date = new Date();
+  public visit_id: string = '';
+  public visit_status: 'NO_VISITADO' | 'VISITADO' | string = '';
 }
 
-export interface SellerVisits {
-  seller_id: string;
-  visits_info: VisitList[];
+export class ChangeStateModel {
+  public state: string = '';
 }
-export interface VisitList {
-  customer_name: string;
-  customer_phonenumber: string;
-  store_name: string;
-  visit_address: string;
-  visit_date: Date; 
-  visit_id: string;
-  visit_status: 'NO_VISITADO' | 'VISITADO' | string;
+export class ChangeStateModelResponse {
+  public message: string = '';
 }
+
+export enum VisitStatus {
+  VISITADO = 'VISITADO',
+  NO_VISITADO = 'NO_VISITADO'
+}
+
+export const STATUS_VISITS: Record<VisitStatus, string> = {
+  [VisitStatus.VISITADO]: 'Visitado',
+  [VisitStatus.NO_VISITADO]: 'No visitado'
+};
+
+export const ALLOWED_STATUS: VisitStatus[] = Object.keys(STATUS_VISITS) as VisitStatus[];

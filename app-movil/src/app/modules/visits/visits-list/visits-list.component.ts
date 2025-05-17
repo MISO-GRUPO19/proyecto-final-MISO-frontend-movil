@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { VisitsManager } from '../services/visits.service';
-import { SellerVisits, VisitList } from '../models/visits.model';
+import { ChangeStateModelResponse, SellerVisits, STATUS_VISITS, VisitList, VisitStatus } from '../models/visits.model';
 import { VisitAnalysisResult } from '../models/details-video.model';
 
 @Component({
@@ -16,7 +16,8 @@ import { VisitAnalysisResult } from '../models/details-video.model';
   imports: [CommonModule, RxReactiveFormsModule, ReactiveFormsModule, TranslateModule, RouterModule],
 })
 export class VisitsListComponent implements OnInit {
-
+  VisitStatus = VisitStatus;
+  STATUS_VISITS = STATUS_VISITS;
   visits: VisitList[] = [];
   error: string | null = null;
   sellerId: string = '';
@@ -55,15 +56,30 @@ export class VisitsListComponent implements OnInit {
     switch (tag) {
       case 'Próximo':
         return 'bg-orange-100 text-orange-800';
-      case 'Más tarde':
+      case VisitStatus.NO_VISITADO:
         return 'bg-yellow-100 text-yellow-800';
-      case 'Visitado':
+      case VisitStatus.VISITADO:
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-200 text-gray-800';
     }
   }
 
+  onVisitStatusClick(visit: VisitList, state: string): void {
+    if (visit) {
+      this.visitsManager.changeStateVisit(visit.visit_id, { state: state }).subscribe({
+        next: (response: ChangeStateModelResponse) => {
+          alert(response.message);
+          this.fetchVisits();
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err.error?.mssg || 'Error de autenticación';
+        }
+      });
+
+    }
+  }
   openCamara(id: string): void {
     this.visitsManager.getVisitAnalysis(id).subscribe({
       next: (res: VisitAnalysisResult) => {
@@ -75,3 +91,5 @@ export class VisitsListComponent implements OnInit {
     });
   }
 }
+
+

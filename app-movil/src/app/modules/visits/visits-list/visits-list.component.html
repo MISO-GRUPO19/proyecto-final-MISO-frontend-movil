@@ -11,7 +11,7 @@
       </div>
     </div>
     <span [ngClass]="getTagClass(visit.visit_status)" class="text-xs font-semibold px-2 py-1 rounded">
-      {{ visit.visit_status }}
+       {{ visit.visit_status === VisitStatus.NO_VISITADO ? 'NO VISITADO' : 'VISITADO' }} 
     </span>
   </div>
 
@@ -41,14 +41,18 @@
 
   <!-- Estado y botón de acción -->
   <div class="flex justify-between items-center mt-4">
-    <span
-      [ngClass]="{
-        'bg-green-100 text-green-800': visit.visit_status === 'visited',
-        'bg-orange-100 text-orange-800': visit.visit_status === 'notVisited'
-      }"
-      class="text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-      {{ visit.visit_status === 'visited' ? 'Visitado' : 'No visitado' }}
-    </span>
+<button
+  (click)="onVisitStatusClick(visit, visit.visit_status === VisitStatus.NO_VISITADO ? VisitStatus.VISITADO : VisitStatus.NO_VISITADO)"
+  [ngClass]="{
+    'bg-green-100 text-green-800': visit.visit_status === VisitStatus.VISITADO,
+    'bg-orange-100 text-orange-800': visit.visit_status === VisitStatus.NO_VISITADO
+  }"
+  class="text-xs font-semibold px-3 py-1 rounded-full shadow-sm"
+>
+  {{ visit.visit_status === VisitStatus.NO_VISITADO ? 'Marcar Visitado' : 'Marcar No visitado' }} 
+</button>
+
+
 
     <button (click)="openCamara(visit.visit_id)" title="Grabar video" class="text-gray-600 hover:text-black">
       <span class="material-icons text-lg">videocam</span>
