@@ -71,7 +71,7 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   submitOrder() {
-    if (localStorage.getItem('selectedClient') === null) {
+    if (!this.clientId) {
       alert('Por favor seleccione un cliente');
       return;
     }
