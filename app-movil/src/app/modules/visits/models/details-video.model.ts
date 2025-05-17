@@ -9,4 +9,3 @@ export class VisitAnalysisResult {
     public status: string = '';
     public video_id: string = '';
 }
-

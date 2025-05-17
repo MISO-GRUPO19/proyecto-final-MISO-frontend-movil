@@ -71,7 +71,7 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   submitOrder() {
-    if (localStorage.getItem('selectedClient') === null) {
+    if (!this.clientId) {
       alert('Por favor seleccione un cliente');
       return;
     }
@@ -99,7 +99,6 @@ export class ShoppingCartComponent implements OnInit {
         });
       },
       error: (err) => {
-        debugger;
         const key = err.error?.error;
         const errorMessage = key && key.trim() !== ''
           ? this.translateService.instant(key)

@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { VisitsManager } from '../services/visits.service';
 import { ChangeStateModelResponse, SellerVisits, STATUS_VISITS, VisitList, VisitStatus } from '../models/visits.model';
+import { VisitAnalysisResult } from '../models/details-video.model';
 
 @Component({
   selector: 'app-visits-list',
@@ -50,6 +51,7 @@ export class VisitsListComponent implements OnInit {
   }
 
 
+
   getTagClass(tag: string): string {
     switch (tag) {
       case 'Próximo':
@@ -79,7 +81,14 @@ export class VisitsListComponent implements OnInit {
     }
   }
   openCamara(id: string): void {
-    // this.router.navigate(['/home/visits/video/' + id],);
+    this.visitsManager.getVisitAnalysis(id).subscribe({
+      next: (res: VisitAnalysisResult) => {
+        this.router.navigate(['/home/visits/video/details/' + id],);
+      },
+      error: (err) => {
+        this.router.navigate(['/home/visits/video/' + id],);
+      }
+    });
   }
 }
 

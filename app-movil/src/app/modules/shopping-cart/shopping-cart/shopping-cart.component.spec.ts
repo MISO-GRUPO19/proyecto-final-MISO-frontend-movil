@@ -99,7 +99,7 @@ describe('ShoppingCartComponent', () => {
 
   it('debería alertar si no hay cliente seleccionado', () => {
     spyOn(window, 'alert');
-    (localStorage.getItem as jasmine.Spy).withArgs('selectedClient').and.returnValue(null);
+    component.clientId = undefined;
 
     component.submitOrder();
 
