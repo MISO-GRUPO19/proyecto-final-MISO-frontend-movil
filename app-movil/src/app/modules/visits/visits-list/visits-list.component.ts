@@ -83,7 +83,7 @@ export class VisitsListComponent implements OnInit {
   openCamara(id: string): void {
     this.visitsManager.getVisitAnalysis(id).subscribe({
       next: (res: VisitAnalysisResult) => {
-        this.router.navigate(['/home/visits/video/details/' + id],);
+        this.router.navigate(['/home/visits/details/' + id],);
       },
       error: (err) => {
         this.router.navigate(['/home/visits/video/' + id],);

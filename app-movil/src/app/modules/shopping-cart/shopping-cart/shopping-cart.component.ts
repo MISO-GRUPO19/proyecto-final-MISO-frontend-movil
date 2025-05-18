@@ -24,7 +24,6 @@ export class ShoppingCartComponent implements OnInit {
   constructor(private ordersManager: OrdersManager, private router: Router, private translateService: TranslateService) { }
 
   ngOnInit() {
-    debugger;
     this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     const userData = localStorage.getItem('user');
     if (userData) {
