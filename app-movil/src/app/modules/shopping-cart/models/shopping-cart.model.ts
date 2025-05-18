@@ -9,4 +9,5 @@ export class OrderPayload {
     public total: number = 0;
     public type: 'CLIENTE' | 'VENDEDOR' = 'CLIENTE';
     public products: OrderProduct[] = [];
+    public seller_id: string = '';
 }
