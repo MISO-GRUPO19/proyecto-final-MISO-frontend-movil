@@ -24,11 +24,15 @@ export class ShoppingCartComponent implements OnInit {
   constructor(private ordersManager: OrdersManager, private router: Router, private translateService: TranslateService) { }
 
   ngOnInit() {
+    debugger;
     this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       this.roleId = user.role;
+        if (this.roleId == rolesEnum.Cliente) {
+        this.clientId = user.id
+      }
     }
     const storedClient = localStorage.getItem('selectedClient');
     if (storedClient) {
