@@ -69,7 +69,7 @@ export class VisitsListComponent implements OnInit {
     if (visit) {
       this.visitsManager.changeStateVisit(visit.visit_id, { state: state }).subscribe({
         next: (response: ChangeStateModelResponse) => {
-          alert(response.message);
+          alert("Se realizo exitosamente la visitia");
           this.fetchVisits();
         },
         error: (err) => {
