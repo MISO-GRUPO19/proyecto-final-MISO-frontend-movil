@@ -8,7 +8,8 @@
     "Validations": {
       "IsRequired": "Este campo es requerido",
       "ThePasswordsAreNotEquals": "Las contraseñas no coinciden",
-      "MustBeEmail": "Debe ser un correo electrónico",
-    }
+      "MustBeEmail": "Debe ser un correo electrónico"
+    },
+    "ProductInsufficientStock": "Insuficiente stock del producto"
   }
   

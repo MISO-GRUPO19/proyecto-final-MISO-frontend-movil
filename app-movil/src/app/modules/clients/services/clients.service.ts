@@ -12,12 +12,15 @@ export class ClientsManager {
     private apiUrl = environment.apiUrl; // API
     private http = inject(HttpClient);
     private headers = {
-        Authorization: `Bearer ${sessionStorage.getItem('access_token')}`
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
     };
     constructor() { }
 
     getClients(): Observable<ClientsList[]> {
         return this.http.get<ClientsList[]>(this.apiUrl + '/customers', { headers: this.headers })
+    }
+    getClientByIdAsync(id: string): Observable<ClientsList[]> {
+        return this.http.get<ClientsList[]>(this.apiUrl + '/customers/' + id, { headers: this.headers })
     }
 
 }

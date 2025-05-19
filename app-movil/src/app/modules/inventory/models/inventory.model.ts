@@ -9,3 +9,6 @@ export class ProductsList {
     public price: number = 0;
     public category: string = '';
 }
+export class ProductsShoppingCar extends ProductsList {
+    public quantity: number = 0;
+}

@@ -1,0 +1,44 @@
+<!-- Carrito de compras -->
+<div class="h-full flex flex-col bg-white">
+
+  <!-- Lista de productos -->
+  <div class="flex-1 px-4 py-6 space-y-6">
+    <div *ngFor="let item of cartItems" class="flex items-center justify-between">
+      <div>
+        <div class="font-semibold">{{ item.name }}</div>
+        <div class="text-red-500 font-bold">#{{ item.barcode }}</div>
+        <div class="text-sm mt-1">${{ item.price }} c/u</div>
+      </div>
+
+      <!-- Controles de cantidad -->
+      <div class="flex items-center gap-2">
+        <button class="w-8 h-8 rounded-full bg-gray-100 text-xl" (click)="decreaseQuantity(item)">−</button>
+        <span class="font-semibold text-base w-8 text-center">{{ item.quantity }}</span>
+        <button class="w-8 h-8 rounded-full bg-green-500 text-white text-xl" (click)="increaseQuantity(item)">+</button>
+      </div>
+    </div>
+  </div>
+
+<div class="px-4 pb-6">
+  <div class="text-sm mb-1" *ngIf="roleId == roles.Vendedor">Cliente:
+    <span class="font-semibold">{{ clientName || 'No asignado' }}</span>
+  </div>
+  <div class="text-sm mb-1">Tienda:
+    <span class="font-semibold">{{ storeName || 'No asignada' }}</span>
+  </div>
+  <div class="text-lg font-semibold text-right text-green-600">
+    Total: ${{ total }}
+  </div>
+</div>
+
+
+  <!-- Botón de pedido -->
+  <div class="px-4 pb-6">
+    <button
+      class="w-full bg-green-500 text-white text-lg py-3 rounded-full font-semibold"
+      (click)="submitOrder()"
+    >
+      Realizar pedido
+    </button>
+  </div>
+</div>
