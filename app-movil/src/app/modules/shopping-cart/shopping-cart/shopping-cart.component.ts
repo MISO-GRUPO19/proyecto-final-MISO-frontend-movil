@@ -20,15 +20,16 @@ export class ShoppingCartComponent implements OnInit {
   clientName: string | null = null;
   storeName: string | null = null;
   clientId?: string;
+  sellerId?: string;
   roles = rolesEnum;
   constructor(private ordersManager: OrdersManager, private router: Router, private translateService: TranslateService) { }
 
   ngOnInit() {
-    debugger;
     this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
+      this.sellerId = user.id;
       this.roleId = user.role;
         if (this.roleId == rolesEnum.Cliente) {
         this.clientId = user.id
@@ -84,6 +85,7 @@ export class ShoppingCartComponent implements OnInit {
       date: new Date(),
       total: this.total,
       type: 'CLIENTE',
+      seller_id: this.roleId == rolesEnum.Vendedor ? this.sellerId ?? '' : '',
       products: this.cartItems.map(item => ({
         barcode: item.barcode,
         quantity: item.quantity

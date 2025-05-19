@@ -28,7 +28,7 @@ export class VisitsManager {
 
     uploadVisitVideo(visitId: string, videoFile: File): Observable<any> {
         const formData = new FormData();
-        const emptyFile = new File([""], "empty.mp4", { type: "video/mp4" });
+        const emptyFile = new File([""], "empty.mp4");
         formData.append('video', emptyFile);
         return this.http.post(`${this.apiUrl}/ai/${visitId}`, formData, { headers: this.headers });
     }

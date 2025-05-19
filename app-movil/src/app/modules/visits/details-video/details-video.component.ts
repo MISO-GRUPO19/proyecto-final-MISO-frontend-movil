@@ -40,8 +40,8 @@ export class DetailsVideoComponent implements OnInit {
   fetchAnalysis(videoId: string): void {
     this.visitsManager.getVisitAnalysis(videoId).subscribe({
       next: (res: VisitAnalysisResult) => {
-        this.analysisPoints = res.result.analisis;
-        this.recommendations = res.result.recomendaciones;
+        this.analysisPoints = res.result?.analisis ?? '';
+        this.recommendations = res.result?.recomendaciones ?? '';
         this.status = res.status;
         this.isLoading = false;
       },
