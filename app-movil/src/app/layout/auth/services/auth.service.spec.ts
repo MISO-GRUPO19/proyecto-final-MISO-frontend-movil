@@ -27,12 +27,12 @@ describe('AuthManager', () => {
 
         service = TestBed.inject(AuthManager);
         httpMock = TestBed.inject(HttpTestingController);
-        sessionStorage.clear();
+        localStorage.clear();
     });
 
     afterEach(() => {
         httpMock.verify();
-        sessionStorage.clear();
+        localStorage.clear();
     });
 
     it('should be created', () => {
@@ -44,9 +44,9 @@ describe('AuthManager', () => {
 
         service.login(credentials).subscribe(response => {
             expect(response).toEqual(dummyResponse);
-            expect(sessionStorage.getItem('access_token')).toBe(dummyResponse.access_token);
-            expect(sessionStorage.getItem('refresh_token')).toBe(dummyResponse.refresh_token);
-            expect(sessionStorage.getItem('user')).toBe(JSON.stringify(dummyResponse.user));
+            expect(localStorage.getItem('access_token')).toBe(dummyResponse.access_token);
+            expect(localStorage.getItem('refresh_token')).toBe(dummyResponse.refresh_token);
+            expect(localStorage.getItem('user')).toBe(JSON.stringify(dummyResponse.user));
         });
 
         const req = httpMock.expectOne(environment.apiUrl + '/users/login');
@@ -55,9 +55,9 @@ describe('AuthManager', () => {
     });
 
     it('should logout and remove tokens', () => {
-        sessionStorage.setItem('access_token', 'abc');
-        sessionStorage.setItem('refresh_token', 'xyz');
-        sessionStorage.setItem('user', JSON.stringify({
+        localStorage.setItem('access_token', 'abc');
+        localStorage.setItem('refresh_token', 'xyz');
+        localStorage.setItem('user', JSON.stringify({
             id: '1',
             email: 'john@example.com',
             role: 1
@@ -65,24 +65,24 @@ describe('AuthManager', () => {
 
         service.logout();
 
-        expect(sessionStorage.getItem('access_token')).toBeNull();
-        expect(sessionStorage.getItem('refresh_token')).toBeNull();
-        expect(sessionStorage.getItem('user')).toBeNull();
+        expect(localStorage.getItem('access_token')).toBeNull();
+        expect(localStorage.getItem('refresh_token')).toBeNull();
+        expect(localStorage.getItem('user')).toBeNull();
     });
 
     it('should get access token from sessionStorage', () => {
-        sessionStorage.setItem('access_token', 'abc');
+        localStorage.setItem('access_token', 'abc');
         const token = service.getAccessToken();
         expect(token).toBe('abc');
     });
 
     it('should return true if logged in', () => {
-        sessionStorage.setItem('access_token', 'abc');
+        localStorage.setItem('access_token', 'abc');
         expect(service.isLoggedIn()).toBeTrue();
     });
 
     it('should return false if not logged in', () => {
-        sessionStorage.removeItem('access_token');
+        localStorage.removeItem('access_token');
         expect(service.isLoggedIn()).toBeFalse();
     });
 });

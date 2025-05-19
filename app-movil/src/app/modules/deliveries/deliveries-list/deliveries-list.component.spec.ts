@@ -59,7 +59,7 @@ describe('DeliveriesListComponent', () => {
   }));
 
   beforeEach(() => {
-    sessionStorage.clear(); // Limpiar antes de cada test
+    localStorage.clear(); // Limpiar antes de cada test
     fixture = TestBed.createComponent(DeliveriesListComponent);
     component = fixture.componentInstance;
   });
@@ -70,7 +70,7 @@ describe('DeliveriesListComponent', () => {
 
   it('debería asignar clientId desde sessionStorage y llamar fetchDeliveries', () => {
     const user = { id: '123' };
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
     mockOrdersManager.getOrdersByClient.and.returnValue(of(mockOrders));
 
     component.ngOnInit();
@@ -81,7 +81,7 @@ describe('DeliveriesListComponent', () => {
   });
 
   it('no debería llamar fetchDeliveries si no hay clientId', () => {
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
     component.ngOnInit();
     expect(component.clientId).toBeNull();
     expect(mockOrdersManager.getOrdersByClient).not.toHaveBeenCalled();
@@ -90,7 +90,7 @@ describe('DeliveriesListComponent', () => {
   it('debería manejar error de servicio correctamente', () => {
     const consoleSpy = spyOn(console, 'error');
     const user = { id: '123' };
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
 
     mockOrdersManager.getOrdersByClient.and.returnValue(
       throwError(() => ({ error: 'Error de red' }))

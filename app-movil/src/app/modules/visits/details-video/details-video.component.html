@@ -1,0 +1,18 @@
+<div class="p-4 space-y-4">
+  <div *ngIf="isLoading" class="text-center text-gray-600">Cargando análisis...</div>
+  <div *ngIf="hasError" class="text-center text-red-600">Error al cargar los datos.</div>
+
+  <div *ngIf="!isLoading && !hasError" class="bg-white shadow-md rounded-xl p-4">
+    <p class="text-sm text-gray-500 mb-2">Estado del análisis: <strong>{{ status }}</strong></p>
+
+    <h3 class="font-semibold text-base mb-2">Análisis</h3>
+    <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+      <li *ngFor="let point of analysisPoints">{{ point }}</li>
+    </ul>
+
+    <h3 class="font-semibold text-base mt-4 mb-2">Recomendaciones</h3>
+    <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+      <li *ngFor="let rec of recommendations">{{ rec }}</li>
+    </ul>
+  </div>
+</div>

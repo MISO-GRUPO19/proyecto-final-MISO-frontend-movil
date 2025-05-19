@@ -81,6 +81,14 @@ describe('DeliveriesFormComponent', () => {
     expect(component.delivery).toEqual(mockOrder);
   });
 
+  it('debería manejar un array vacío como respuesta del servicio', () => {
+    mockOrdersManager.getOrdersById.and.returnValue(of([]));
+
+    component.ngOnInit();
+
+    expect(component.delivery).toBeNull();
+  });
+
   it('debería manejar errores del servicio', () => {
     const consoleSpy = spyOn(console, 'error');
     mockOrdersManager.getOrdersById.and.returnValue(
@@ -90,6 +98,18 @@ describe('DeliveriesFormComponent', () => {
     component.ngOnInit();
 
     expect(consoleSpy).toHaveBeenCalled();
+    expect(component.delivery).toBeNull();
+  });
+
+  it('debería no llamar al servicio si deliveryId es null', () => {
+    const consoleSpy = spyOn(console, 'error');
+    const activatedRouteSpy = TestBed.inject(ActivatedRoute);
+    spyOn(activatedRouteSpy.snapshot.paramMap, 'get').and.returnValue(null);
+
+    component.ngOnInit();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Delivery ID is missing');
+    expect(mockOrdersManager.getOrdersById).not.toHaveBeenCalled();
     expect(component.delivery).toBeNull();
   });
 });

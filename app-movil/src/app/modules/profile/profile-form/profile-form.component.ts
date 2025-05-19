@@ -8,6 +8,7 @@ import { IFormGroup, RxFormBuilder, RxReactiveFormsModule, email } from '@rxweb/
 import { AuthManager } from '../../../layout/auth/services/auth.service';
 import { ProfileForm } from '../models/profile-form.model';
 import { of, Subscription, switchMap } from 'rxjs';
+import { country } from '../models/countries.model';
 
 @Component({
   selector: 'app-profile-form',
@@ -21,7 +22,7 @@ export class ProfileFormComponent implements OnInit {
   error: string | null = null;
   hide = true;
   hideConfirm = true;
-  countries: string[] = ['Colombia', 'México', 'Argentina', 'España'];
+  countries: string[] = country;
   public subscriptions: Subscription[] = [];
   email: string | null = null;
 

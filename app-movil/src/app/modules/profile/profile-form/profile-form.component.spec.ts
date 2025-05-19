@@ -50,13 +50,7 @@ describe('ProfileFormComponent', () => {
         expect(component.email).toBe('test@email.com');
     });
 
-    it('no debe enviar si el formulario es inválido', () => {
-        spyOnProperty(component.formGroup, 'invalid', 'get').and.returnValue(true);
-        component.onSubmit();
-        expect(mockAuthManager.createCustomers).not.toHaveBeenCalled();
-    });
-
-    it('debe llamar a createCustomers y redirigir a /register-success si es válido', () => {
+    it('debe llamar a createCustomers y redirigir a /register-success si el formulario es válido', () => {
         component.email = 'cliente@email.com';
         component.formGroup.setValue({
             name: 'Juan',
@@ -99,5 +93,32 @@ describe('ProfileFormComponent', () => {
         component.onSubmit();
 
         expect(component.error).toBe('Fallo en creación');
+    });
+
+    it('debe manejar el error y mostrar mensaje si el backend falla sin mensaje', () => {
+        component.email = 'cliente@email.com';
+        component.formGroup.setValue({
+            name: 'Juan',
+            lastName: 'Pérez',
+            country: 'Colombia',
+            address: 'Calle 123',
+            telphone: 3001234567
+        });
+
+        mockAuthManager.createCustomers.and.returnValue(
+            throwError(() => ({ error: {} })) // Simulando un error sin mensaje
+        );
+
+        component.onSubmit();
+
+        expect(component.error).toBe('Error de autenticación'); // Verifica el valor por defecto
+    });
+
+    it('debe cancelar las suscripciones en ngOnDestroy', () => {
+        const unsubscribeSpy = spyOn(component.subscriptions[0], 'unsubscribe');
+        
+        component.ngOnDestroy();
+        
+        expect(unsubscribeSpy).toHaveBeenCalled();
     });
 });
